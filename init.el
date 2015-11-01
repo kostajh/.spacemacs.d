@@ -27,7 +27,8 @@ values."
      auto-completion
      better-defaults
      emacs-lisp
-     git
+     (git :variables
+          magit-status-buffer-switch-function 'switch-to-buffer)
      prodigy
      markdown
      (gtags :variables
@@ -130,8 +131,8 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
-                               :size 13
+   dotspacemacs-default-font '("Essential Pragmata Pro"
+                               :size 12
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -239,6 +240,9 @@ user code."
   "Configuration function for user code.
  This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
+
+  (when (display-graphic-p)
+    (set-face-attribute 'default nil :family "Essential Pragmata Pro" :height 120))
 
   ;; Keybindings.
   (evil-leader/set-key "oa" 'org-agenda)
