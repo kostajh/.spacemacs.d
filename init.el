@@ -34,8 +34,73 @@ values."
      (gtags :variables
             helm-gtags-auto-update nil)
      github
+     dash
      spotify
      pandoc
+     (mu4e :variables
+           mu4e-installation-path "/usr/local/share/emacs/site-lisp/mu4e"
+           mu4e-maildir       "~/mail"   ;; top-level Maildir
+           mu4e-sent-folder   "/fastmail/INBOX.Sent Items"       ;; folder for sent messages
+           mu4e-drafts-folder "/fastmail/INBOX.Drafts"     ;; unfinished messages
+           mu4e-trash-folder  "/fastmail/INBOX.Trash"      ;; trashed messages
+           mu4e-refile-folder "/fastmail/INBOX.Archive"   ;; saved messages
+           mu4e-get-mail-command "offlineimap -q"
+           mu4e-update-interval 300
+           mu4e-compose-signature-auto-include t
+           mu4e-user-mail-address-list (list "kosta@kostaharlan.net" "kosta@savaslabs.com" "kostajh@gmail.com" "kosta@embros.org" "kostaharlan@gmail.com" "kosta@durhamatletico.com")
+           message-send-mail-function 'smtpmail-send-it
+           smtpmail-smtp-server "mail.messagingengine.com"
+           epg-gpg-program "gpg2"
+           smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
+           smtpmail-default-smtp-server "mail.messagingengine.com"
+           smtpmail-local-domain "kostaharlan.net"
+           user-full-name "Kosta Harlan"
+           user-mail-address "kosta@kostaharlan.net"
+           gnutls-algorithm-priority "NORMAL:%COMPAT"
+           smtpmail-stream-type 'ssl
+           smtpmail-smtp-service 465
+           mml2015-use 'epg
+           mu4e-attachment-dir  "~/Downloads"
+           mu4e-maildir-shortcuts
+           '( ("/fastmail/INBOX"     . ?i)
+              ("/fastmail/INBOX.Archive"   . ?a)
+              ("/fastmail.Sent Items"      . ?e)
+              ("/savaslabs/INBOX"  . ?s)
+              )
+           mu4e-view-show-images t
+           mu4e-account-alist
+           '(("fastmail"
+         (mu4e-sent-folder "/fastmail/INBOX.Sent Items")
+         (mu4e-drafts-folder "/fastmail/INBOX.Drafts")
+         (mu4e-trash-folder "/fastmail/INBOX.Trash")
+         (mu4e-refile-folder "/fastmail/INBOX.Archive")
+         (user-mail-address "kosta@kostaharlan.net")
+         (smtpmail-default-smtp-server "mail.messagingengine.com")
+         (smtpmail-local-domain "kostaharlan.net")
+         (smtpmail-smtp-user "kosta@fastmail.com")
+         (mu4e-compose-signature "@kostajh | kosta@kostaharlan.net")
+         (smtpmail-smtp-server "mail.messagingengine.com")
+         (smtpmail-stream-type ssl)
+         (smtpmail-smtp-service 465))
+        ("savaslabs"
+         (mu4e-sent-folder "/savaslabs/[Gmail].Sent Mail")
+         (mu4e-drafts-folder "/savaslabs/[Gmail].Drafts")
+         (mu4e-trash-folder "/savaslabs/[Gmail].Trash")
+         (mu4e-refile-folder "/savaslabs/[Gmail].All Mail")
+         (user-mail-address "kosta@savaslabs.com")
+         (smtpmail-default-smtp-server "smtp.gmail.com")
+         (smtpmail-local-domain "savaslabs.com")
+         (smtpmail-smtp-user "kosta@savaslabs.com")
+         (smtpmail-smtp-server "smtp.gmail.com")
+         (smtpmail-stream-type starttls)
+         (mu4e-compose-signature "Kosta Harlan\nDirector of Technology\nhttp://savaslabs.com")
+         (smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
+         (user-mail-address "kosta@savaslabs.com")
+         (user-full-name "Kosta Harlan")
+         (smtpmail-smtp-service 587)))
+           (mu4e/mail-account-reset)
+           )
+     themes-megapack
      sql
      python
      yaml
@@ -43,6 +108,9 @@ values."
      semantic
      html
      javascript
+     shell-scripts
+     (geolocation :variables
+                  geolocation-enable-weather-forecast)
      emoji
      vagrant
      (deft :variables
@@ -71,6 +139,7 @@ values."
                   ("DONE" ("WAITING") ("CANCELLED") ("HOLD"))))
           org-todo-keywords (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)" "LOGGED(l)" "CANCELLED(c@/!)") (sequence "WAITING(w@/!)" "HOLD(h@/!)" "PHONE" "MEETING" "APPOINTMENT")))
           org-agenda-files (quote ("~/org/todo.org"
+                                   "~/org/appts.org"
                                    "~/org/notes.org"
                                    )))
      php
@@ -124,15 +193,15 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         solarized-light
                          solarized-dark
+                         solarized-light
                          )
    ;; If non nil the cursor color matches the state color.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
-   dotspacemacs-default-font '("Essential Pragmata Pro"
-                               :size 12
+   dotspacemacs-default-font '("Hack"
+                               :size 15
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -240,12 +309,13 @@ user code."
   "Configuration function for user code.
  This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
-
-  (when (display-graphic-p)
-    (set-face-attribute 'default nil :family "Essential Pragmata Pro" :height 120))
+  (setq calendar-location-name "Durham, United States"
+        calendar-latitude 35.9886
+        calendar-longitude 78.9072)
 
   ;; Keybindings.
-  (evil-leader/set-key "oa" 'org-agenda)
+  (evil-leader/set-key "og" 'org-agenda)
+  (evil-leader/set-key "oa" 'org-agenda-list)
   (evil-leader/set-key "oc" 'org-capture)
   (evil-leader/set-key "ois" 'kostajh/irc-slack)
   (evil-leader/set-key "oif" 'kostajh/irc-freenode)
@@ -282,51 +352,18 @@ layers configuration. You are free to put any user code."
   (use-package mu4e
     :defer t
     :init
-    (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
-    (evil-leader/set-key "om" 'mu4e)
     (require 'mu4e)
     (require 'org-mu4e)
     :config
-    (setq
-     mu4e-maildir       "~/mail"   ;; top-level Maildir
-     mu4e-sent-folder   "/fastmail/INBOX.Sent Items"       ;; folder for sent messages
-     mu4e-drafts-folder "/fastmail/INBOX.Drafts"     ;; unfinished messages
-     mu4e-trash-folder  "/fastmail/INBOX.Trash"      ;; trashed messages
-     mu4e-refile-folder "/fastmail/INBOX.Archive"   ;; saved messages
-     mu4e-get-mail-command "offlineimap -q"
-     mu4e-update-interval 300
-     mu4e-compose-signature-auto-include t
-     )
-    (setq mu4e-user-mail-address-list (list "kosta@kostaharlan.net" "kosta@savaslabs.com" "kostajh@gmail.com" "kosta@embros.org" "kostaharlan@gmail.com"))
 
     (defun no-auto-fill ()
       "Turn off auto-fill-mode."
       (auto-fill-mode -1))
 
     (add-hook 'mu4e-compose-mode-hook #'no-auto-fill)
+    (add-hook 'mu4e-compose-mode-hook 'company-mode-on)
 
-    (setq message-send-mail-function 'smtpmail-send-it)
-    (setq smtpmail-smtp-server "mail.messagingengine.com")
-    (setq smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg"))
-    (setq smtpmail-default-smtp-server "mail.messagingengine.com")
-    (setq smtpmail-local-domain "kostaharlan.net")
-    (setq user-full-name "Kosta Harlan")
-    (setq user-mail-address "kosta@kostaharlan.net")
-    (setq gnutls-algorithm-priority "NORMAL:%COMPAT")
-    (setq smtpmail-stream-type 'ssl)
-    (setq smtpmail-smtp-service 465)
-    (setq mml2015-use 'epg)
-    (setq mu4e-attachment-dir  "~/Downloads")
-    (setq mu4e-maildir-shortcuts
-          '( ("/fastmail/INBOX"     . ?i)
-             ("/fastmail/INBOX.Archive"   . ?a)
-             ("/fastmail.Sent Items"      . ?e)
-             ("/savaslabs/INBOX"  . ?s)
-             ))
-
-    ;; enable inline images
-    (setq mu4e-view-show-images t)
-    ;; use imagemagick, if available
+        ;; use imagemagick, if available
     (when (fboundp 'imagemagick-register-types)
       (imagemagick-register-types))
     (require 'mu4e-contrib)
@@ -336,89 +373,12 @@ layers configuration. You are free to put any user code."
 
     (add-to-list 'mu4e-bookmarks
                  '("to:kosta@savaslabs.com"           "savas"          ?i) t)
-    (defvar my-mu4e-account-alist
-      '(("fastmail"
-         (mu4e-sent-folder "/fastmail/INBOX.Sent Items")
-         (mu4e-drafts-folder "/fastmail/INBOX.Drafts")
-         (mu4e-trash-folder "/fastmail/INBOX.Trash")
-         (mu4e-refile-folder "/fastmail/INBOX.Archive")
-         (user-mail-address "kosta@kostaharlan.net")
-         (smtpmail-default-smtp-server "mail.messagingengine.com")
-         (smtpmail-local-domain "kostaharlan.net")
-         (smtpmail-smtp-user "kosta@fastmail.com")
-         (mu4e-compose-signature "@kostajh | kosta@kostaharlan.net")
-         (smtpmail-smtp-server "mail.messagingengine.com")
-         (smtpmail-stream-type ssl)
-         (smtpmail-smtp-service 465))
-        ("savaslabs"
-         (mu4e-sent-folder "/savaslabs/[Gmail].Sent Mail")
-         (mu4e-drafts-folder "/savaslabs/[Gmail].Drafts")
-         (mu4e-trash-folder "/savaslabs/[Gmail].Trash")
-         (mu4e-refile-folder "/savaslabs/[Gmail].All Mail")
-         (user-mail-address "kosta@savaslabs.com")
-         (smtpmail-default-smtp-server "smtp.gmail.com")
-         (smtpmail-local-domain "savaslabs.com")
-         (smtpmail-smtp-user "kosta@savaslabs.com")
-         (smtpmail-smtp-server "smtp.gmail.com")
-         (smtpmail-stream-type starttls)
-         (mu4e-compose-signature "Kosta Harlan\nDirector of Technology\nhttp://savaslabs.com")
-         (smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
-         (user-mail-address "kosta@savaslabs.com")
-         (user-full-name "Kosta Harlan")
-         (smtpmail-smtp-service 587))))
+        )
 
-    (defun my-mu4e-set-account ()
-      "Set the account for composing a message."
-      (let* ((account
-              (if mu4e-compose-parent-message
-                  (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
-                    (string-match "/\\(.*?\\)/" maildir)
-                    (match-string 1 maildir))
-                (completing-read (format "Compose with account: (%s) "
-                                         (mapconcat #'(lambda (var) (car var))
-                                                    my-mu4e-account-alist "/"))
-                                 (mapcar #'(lambda (var) (car var)) my-mu4e-account-alist)
-                                 nil t nil nil (caar my-mu4e-account-alist))))
-             (account-vars (cdr (assoc account my-mu4e-account-alist))))
-        (if account-vars
-            (mapc #'(lambda (var)
-                      (set (car var) (cadr var)))
-                  account-vars)
-          (error "No email account found"))))
+(setq erc-track-exclude-types '("NICK" "333" "353" "MODE" "JOIN" "PART"))
+(setq erc-hide-list '("JOIN" "PART" "QUIT" "NICK" "MODE"))
 
-    (add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account 'company-mode-on)
-    )
-
-(add-hook 'php-mode-hook
-          (lambda ()
-                          (defvar company-backends)
-                          (defvar company-semantic-modes)
-                          (set (make-local-variable 'company-backends)
-                               '((company-keywords company-semantic php-extras-company company-gtags company-dabbrev-code company-files company-capf company-yasnippet)))
-                          (add-to-list 'company-semantic-modes 'php-mode)
-                          (add-hook 'php-mode-hook #'semantic-mode)
-                          (flycheck-mode-on-safe)
-                          (setq flycheck-phpcs-standard "PSR2")
-                          (setq flycheck-phpmd-rulesets '("codesize" "controversial" "design" "naming" "unusedcode"))))
-
-(use-package semantic-php
-  :load-path "~/src/jorissteyn-semantic-php/"
-  :init (load "~/src/jorissteyn-semantic-php/loaddefs.el")
-  :config (add-hook 'php-mode-hook #'semantic-mode))
-
-(use-package ede-php-autoload-mode
-  :load-path "~/src/ede-php-autoload/"
-  :init (progn
-          (add-hook 'php-mode-hook #'ede-php-autoload-mode)))
-
-(setq erc-track-exclude-types '("NICK" "333" "353" "MODE"))
-
-(use-package feature-mode
-  :mode (("\\.feature\\'" . feature-mode)))
-
-;; Pull up todo.org and load the agenda.
-(find-file "~/org/todo.org")
-(org-agenda nil "a")
+(setq-default evil-escape-key-sequence "fd")
 
 )
 
@@ -429,13 +389,11 @@ layers configuration. You are free to put any user code."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(paradox-github-token t))
+ '(paradox-github-token t)
+ )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
- '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil))))
- '(org-scheduled-today ((t (:foreground "#bc6ec5" :weight bold :height 1.0))))
  '(variable-pitch ((t nil))))
