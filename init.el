@@ -25,8 +25,15 @@ values."
      ;; ----------------------------------------------------------------
      kostajh
      auto-completion
+     finance
      better-defaults
+     (erc :variables
+          erc-track-exclude-types '("NICK" "333" "353" "MODE" "JOIN" "PART")
+          erc-hide-list '("JOIN" "PART" "QUIT" "NICK" "MODE")
+          erc-fools '("SLACK" "omega-deployments" "redmine"))
      emacs-lisp
+     (ranger :variables
+             ranger-show-preview t)
      (git :variables
           magit-status-buffer-switch-function 'switch-to-buffer)
      prodigy
@@ -100,7 +107,6 @@ values."
          (smtpmail-smtp-service 587)))
            (mu4e/mail-account-reset)
            )
-     themes-megapack
      sql
      python
      yaml
@@ -324,9 +330,6 @@ layers configuration. You are free to put any user code."
   ;; IRC settings.
   (load-file "~/.spacemacs.d/.irc.el")
 
-  ;; Use GPG2.
-  (setq epg-gpg-program "gpg2")
-
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -375,10 +378,7 @@ layers configuration. You are free to put any user code."
                  '("to:kosta@savaslabs.com"           "savas"          ?i) t)
         )
 
-(setq erc-track-exclude-types '("NICK" "333" "353" "MODE" "JOIN" "PART"))
-(setq erc-hide-list '("JOIN" "PART" "QUIT" "NICK" "MODE"))
-
-(setq-default evil-escape-key-sequence "fd")
+  (setq-default evil-escape-key-sequence "fd")
 
 )
 
