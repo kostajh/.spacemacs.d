@@ -27,6 +27,7 @@ values."
      auto-completion
      finance
      better-defaults
+     themes-megapack
      (erc :variables
           erc-track-exclude-types '("NICK" "333" "353" "MODE" "JOIN" "PART")
           erc-hide-list '("JOIN" "PART" "QUIT" "NICK" "MODE")
@@ -160,7 +161,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages then consider to create a layer, you can also put the
    ;; configuration in `dotspacemacs/config'.
-   dotspacemacs-additional-packages '(feature-mode)
+   dotspacemacs-additional-packages '(feature-mode org-redmine)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(org-repo-todo)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -177,6 +178,7 @@ values."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
+   dotspacemacs-auto-resume-layout t
    ;; One of `vim', `emacs' or `hybrid'. Evil is always enabled but if the
    ;; variable is `emacs' then the `holy-mode' is enabled at startup. `hybrid'
    ;; uses emacs key bindings for vim's insert mode, but otherwise leaves evil
@@ -199,6 +201,7 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         zenburn
                          solarized-dark
                          solarized-light
                          )
@@ -207,10 +210,10 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Hack"
-                               :size 15
+                               :size 14
                                :weight normal
                                :width normal
-                               :powerline-scale 1.1)
+                               :powerline-scale 1.2)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The leader key accessible in `emacs state' and `insert state'
@@ -263,7 +266,7 @@ values."
    dotspacemacs-loading-progress-bar t
    ;; If non nil the frame is fullscreen when Emacs starts up. (default nil)
    ;; (Emacs 24.4+ only)
-   dotspacemacs-fullscreen-at-startup nil
+   dotspacemacs-fullscreen-at-startup t
    ;; If non nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
    dotspacemacs-fullscreen-use-non-native nil
@@ -322,10 +325,12 @@ layers configuration. You are free to put any user code."
   ;; Keybindings.
   (evil-leader/set-key "og" 'org-agenda)
   (evil-leader/set-key "oa" 'org-agenda-list)
-  (evil-leader/set-key "oc" 'org-capture)
+  ;; (evil-leader/set-key "oc" 'org-capture)
   (evil-leader/set-key "ois" 'kostajh/irc-slack)
   (evil-leader/set-key "oif" 'kostajh/irc-freenode)
   (evil-leader/set-key "ohi" 'harvest-clock-in)
+
+  (add-hook 'org-capture-mode-hook 'evil-insert-state)
 
   ;; IRC settings.
   (load-file "~/.spacemacs.d/.irc.el")
@@ -351,6 +356,18 @@ layers configuration. You are free to put any user code."
     (interactive)
     (shell-command "pkill -9 -f offlineimap")
     )
+
+  (use-package org-redmine
+    :ensure t
+    :config
+    (setq org-redmine-uri "https://pm.savaslabs.com/"
+          org-redmine-auth-netrc-use t
+          org-redmine-template-header "[%p_n%] #%i% %s% by %as_n%"
+          org-redmine-template-property
+                '(("assigned_to" . "%as_n%")
+                  ("version" . "%v_n%")))
+    )
+
   ;; mu4e integration.
   (use-package mu4e
     :defer t
