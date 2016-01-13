@@ -24,11 +24,13 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      kostajh
+     spacemacs-ivy
      auto-completion
      finance
      better-defaults
      themes-megapack
      (erc :variables
+          erc-join-buffer 'bury
           erc-track-exclude-types '("NICK" "333" "353" "MODE" "JOIN" "PART")
           erc-hide-list '("JOIN" "PART" "QUIT" "NICK" "MODE")
           erc-fools '("SLACK" "omega-deployments" "redmine"))
@@ -58,8 +60,8 @@ values."
            mu4e-user-mail-address-list (list "kosta@kostaharlan.net" "kosta@savaslabs.com" "kostajh@gmail.com" "kosta@embros.org" "kostaharlan@gmail.com" "kosta@durhamatletico.com")
            message-send-mail-function 'smtpmail-send-it
            smtpmail-smtp-server "mail.messagingengine.com"
-           epg-gpg-program "gpg2"
-           smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
+           epg-gpg-program "gpg"
+           smtpmail-auth-credentials (expand-file-name "~/.authinfo")
            smtpmail-default-smtp-server "mail.messagingengine.com"
            smtpmail-local-domain "kostaharlan.net"
            user-full-name "Kosta Harlan"
@@ -127,6 +129,7 @@ values."
        deft-text-mode 'org-mode)
      (org :variables
           org-enable-github-support t
+          org-imenu-depth 8
           org-startup-folded (quote "showeverything")
           org-directory "~/org"
           org-agenda-skip-scheduled-if-done t
@@ -161,7 +164,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages then consider to create a layer, you can also put the
    ;; configuration in `dotspacemacs/config'.
-   dotspacemacs-additional-packages '(feature-mode org-redmine)
+   dotspacemacs-additional-packages '(feature-mode org-redmine org-gcal)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(org-repo-todo)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -202,7 +205,9 @@ values."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
                          zenburn
-                         solarized-dark
+                         spacemacs-dark
+                         spacemacs-light
+                         gotham
                          solarized-light
                          )
    ;; If non nil the cursor color matches the state color.
@@ -213,7 +218,7 @@ values."
                                :size 14
                                :weight normal
                                :width normal
-                               :powerline-scale 1.2)
+                               :powerline-scale 1.0)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The leader key accessible in `emacs state' and `insert state'
@@ -266,7 +271,7 @@ values."
    dotspacemacs-loading-progress-bar t
    ;; If non nil the frame is fullscreen when Emacs starts up. (default nil)
    ;; (Emacs 24.4+ only)
-   dotspacemacs-fullscreen-at-startup t
+   dotspacemacs-fullscreen-at-startup nil
    ;; If non nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
    dotspacemacs-fullscreen-use-non-native nil
@@ -306,6 +311,12 @@ values."
    ;; specified with an installed package.
    ;; Not used for now. (default nil)
    dotspacemacs-default-package-repository nil
+   ;; Delete whitespace while saving buffer. Possible values are `all'
+   ;; to aggressively delete empty line and long sequences of whitespace,
+   ;; `trailing' to delete only the whitespace at end of lines, `changed'to
+   ;; delete only whitespace for changed lines or `nil' to disable cleanup.
+   ;; (default nil)
+   dotspacemacs-whitespace-cleanup "changed"
    ))
 
 (defun dotspacemacs/user-init ()
@@ -331,6 +342,42 @@ layers configuration. You are free to put any user code."
   (evil-leader/set-key "ohi" 'harvest-clock-in)
 
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
+
+  ;; Layouts.
+
+  (spacemacs|define-custom-layout "@DrupalVM"
+    :binding "v"
+    :body
+    (find-file "~/src/drupal-vm/README.md")
+    )
+
+  (spacemacs|define-custom-layout "@Mail"
+    :binding "m"
+    :body
+    (mu4e)
+    )
+
+  (spacemacs|define-custom-layout "@Slack"
+    :binding "s"
+    :body
+    (kostajh/irc-slack)
+    )
+
+  (spacemacs|define-custom-layout "@IRC"
+    :binding "i"
+    :body
+    (kostajh/irc-freenode))
+
+  (spacemacs|define-custom-layout "@Deft"
+    :binding "d"
+    :body
+    (deft)
+    )
+
+  (spacemacs|define-custom-layout "@Terminal"
+    :binding "t"
+    :body
+    (shell-pop-ansi-term))
 
   ;; IRC settings.
   (load-file "~/.spacemacs.d/.irc.el")
@@ -362,11 +409,14 @@ layers configuration. You are free to put any user code."
     :config
     (setq org-redmine-uri "https://pm.savaslabs.com/"
           org-redmine-auth-netrc-use t
-          org-redmine-template-header "[%p_n%] #%i% %s% by %as_n%"
+          org-redmine-limit 99
+          org-redmine-template-header "TODO #%i% %s% by %as_n%"
           org-redmine-template-property
                 '(("assigned_to" . "%as_n%")
                   ("version" . "%v_n%")))
-    )
+    (spacemacs/set-leader-keys
+      "ori" 'org-redmine-get-issue
+      "ora" 'org-redmine-anything-show-issue-all))
 
   ;; mu4e integration.
   (use-package mu4e
