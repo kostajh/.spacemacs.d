@@ -361,7 +361,10 @@ layers configuration. You are free to put any user code."
   (spacemacs|define-custom-layout "@Slack"
     :binding "s"
     :body
-    (kostajh/irc-slack)
+    (progn
+      (add-hook 'erc-mode #'(lambda ()
+                              (persp-add-buffer (current-buffer))))
+      (kostajh/irc-slack))
     )
 
   (spacemacs|define-custom-layout "@IRC"
