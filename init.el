@@ -414,7 +414,7 @@ layers configuration. You are free to put any user code."
     (setq org-redmine-uri "https://pm.savaslabs.com/"
           org-redmine-auth-netrc-use t
           org-redmine-limit 99
-          org-redmine-template-header "TODO #%i% %s% by %as_n%"
+          org-redmine-template-header "TODO #%i% %s%"
           org-redmine-template-property
                 '(("assigned_to" . "%as_n%")
                   ("version" . "%v_n%")))
