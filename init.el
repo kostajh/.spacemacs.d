@@ -141,6 +141,7 @@ values."
           org-default-notes-file (concat org-directory "/notes.org")
           org-todo-state-tags-triggers (quote (("CANCELLED" ("CANCELLED" . t))
                   ("WAITING" ("WAITING" . t))
+                  ("DELEGATED" ("DELEGATED" . t))
                   ("HOLD" ("WAITING") ("HOLD" . t))
                   (done ("WAITING") ("HOLD"))
                   ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
@@ -164,7 +165,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages then consider to create a layer, you can also put the
    ;; configuration in `dotspacemacs/config'.
-   dotspacemacs-additional-packages '(feature-mode org-redmine org-gcal)
+   dotspacemacs-additional-packages '(feature-mode org-redmine org-gcal slack)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(org-repo-todo)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -186,7 +187,7 @@ values."
    ;; variable is `emacs' then the `holy-mode' is enabled at startup. `hybrid'
    ;; uses emacs key bindings for vim's insert mode, but otherwise leaves evil
    ;; unchanged. (default 'vim)
-   dotspacemacs-editing-style 'hybrid
+   dotspacemacs-editing-style 'vim
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
    ;; Specify the startup banner. Default value is `official', it displays
@@ -337,10 +338,8 @@ layers configuration. You are free to put any user code."
   ;; Keybindings.
   (evil-leader/set-key "og" 'org-agenda)
   (evil-leader/set-key "oa" 'org-agenda-list)
-  ;; (evil-leader/set-key "oc" 'org-capture)
-  (evil-leader/set-key "ois" 'kostajh/irc-slack)
-  (evil-leader/set-key "oif" 'kostajh/irc-freenode)
   (evil-leader/set-key "ohi" 'harvest-clock-in)
+  (evil-leader/set-key "oho" 'harvest-clock-out)
 
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
 
@@ -362,9 +361,9 @@ layers configuration. You are free to put any user code."
     :binding "s"
     :body
     (progn
-      (add-hook 'erc-mode #'(lambda ()
+      (add-hook 'slack-mode #'(lambda ()
                               (persp-add-buffer (current-buffer))))
-      (kostajh/irc-slack))
+      (slack-start))
     )
 
   (spacemacs|define-custom-layout "@IRC"
@@ -373,7 +372,7 @@ layers configuration. You are free to put any user code."
     (kostajh/irc-freenode))
 
   (spacemacs|define-custom-layout "@Deft"
-    :binding "d"
+    :binding "D"
     :body
     (deft)
     )
@@ -416,8 +415,8 @@ layers configuration. You are free to put any user code."
           org-redmine-limit 99
           org-redmine-template-header "TODO #%i% %s%"
           org-redmine-template-property
-                '(("assigned_to" . "%as_n%")
-                  ("version" . "%v_n%")))
+          '(("assigned_to" . "%as_n%")
+            ("version" . "%v_n%")))
     (spacemacs/set-leader-keys
       "ori" 'org-redmine-get-issue
       "ora" 'org-redmine-anything-show-issue-all))
@@ -437,7 +436,7 @@ layers configuration. You are free to put any user code."
     (add-hook 'mu4e-compose-mode-hook #'no-auto-fill)
     (add-hook 'mu4e-compose-mode-hook 'company-mode-on)
 
-        ;; use imagemagick, if available
+    ;; use imagemagick, if available
     (when (fboundp 'imagemagick-register-types)
       (imagemagick-register-types))
     (require 'mu4e-contrib)
@@ -447,11 +446,20 @@ layers configuration. You are free to put any user code."
 
     (add-to-list 'mu4e-bookmarks
                  '("to:kosta@savaslabs.com"           "savas"          ?i) t)
-        )
+    )
+
+  (use-package org-gcal
+    :defer t
+    :init (require 'org-gcal)
+    :config
+    (setq org-gcal-client-id "564287255197-err9fodfknmakdc6i5tq6frjb8j2oa4p.apps.googleusercontent.com"
+          org-gcal-client-secret "2MaRjNFIZg4LjR58BSFle6th"
+          org-gcal-file-alist '(("kosta@savaslabs.com" .  "~/org/appts.org")
+                                ("savaslabs.com_pet0dfipsgkj8fkgf8r8eirqo0@group.calendar.google.com" . "~/org/appts.org")
+                                ("kostajh@gmail.com" . "~/org/appts.org"))))
 
   (setq-default evil-escape-key-sequence "fd")
-
-)
+  )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -460,11 +468,16 @@ layers configuration. You are free to put any user code."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(paradox-github-token t)
- )
+ '(custom-safe-themes
+   (quote
+    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "6ecd762f08fd5c3aab65585d5aa04f6ae8b44d969df4be669259975dac849687" "df3e05e16180d77732ceab47a43f2fcdb099714c1c47e91e8089d2fcf5882ea3" "b571f92c9bfaf4a28cb64ae4b4cdbda95241cd62cf07d942be44dc8f46c491f4" default)))
+ '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
+ '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil))))
+ '(slack-message-output-text ((t (:weight normal :height 1.0))))
  '(variable-pitch ((t nil))))
