@@ -375,14 +375,14 @@ layers configuration. You are free to put any user code."
     (mu4e)
     )
 
-  (spacemacs|define-custom-layout "@Slack"
-    :binding "s"
-    :body
-    (progn
-      (add-hook 'slack-mode #'(lambda ()
-                              (persp-add-buffer (current-buffer))))
-      (slack-start))
-    )
+  ;; (spacemacs|define-custom-layout "@Slack"
+  ;;   :binding "s"
+  ;;   :body
+  ;;   (progn
+  ;;     (add-hook 'slack-mode #'(lambda ()
+  ;;                             (persp-add-buffer (current-buffer))))
+  ;;     (slack-start))
+  ;;   )
 
   (spacemacs|define-custom-layout "@IRC"
     :binding "i"
