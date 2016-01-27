@@ -24,9 +24,11 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      kostajh
-     spacemacs-ivy
+     (spacemacs-ivy :variables
+                    ivy-initial-inputs-alist nil)
      auto-completion
      finance
+     slack
      better-defaults
      themes-megapack
      (erc :variables
