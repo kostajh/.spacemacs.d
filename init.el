@@ -28,6 +28,7 @@ values."
                     ivy-initial-inputs-alist nil)
      auto-completion
      finance
+     dockerfile
      slack
      better-defaults
      themes-megapack
@@ -50,6 +51,8 @@ values."
      spotify
      pandoc
      (mu4e :variables
+           mu4e-enable-notifications t
+           mu4e-enable-mode-line t
            mu4e-installation-path "/usr/local/share/emacs/site-lisp/mu4e"
            mu4e-maildir       "~/mail"   ;; top-level Maildir
            mu4e-sent-folder   "/fastmail/INBOX.Sent Items"       ;; folder for sent messages
@@ -82,34 +85,34 @@ values."
            mu4e-view-show-images t
            mu4e-account-alist
            '(("fastmail"
-         (mu4e-sent-folder "/fastmail/INBOX.Sent Items")
-         (mu4e-drafts-folder "/fastmail/INBOX.Drafts")
-         (mu4e-trash-folder "/fastmail/INBOX.Trash")
-         (mu4e-refile-folder "/fastmail/INBOX.Archive")
-         (user-mail-address "kosta@kostaharlan.net")
-         (smtpmail-default-smtp-server "mail.messagingengine.com")
-         (smtpmail-local-domain "kostaharlan.net")
-         (smtpmail-smtp-user "kosta@fastmail.com")
-         (mu4e-compose-signature "@kostajh | kosta@kostaharlan.net")
-         (smtpmail-smtp-server "mail.messagingengine.com")
-         (smtpmail-stream-type ssl)
-         (smtpmail-smtp-service 465))
-        ("savaslabs"
-         (mu4e-sent-folder "/savaslabs/[Gmail].Sent Mail")
-         (mu4e-drafts-folder "/savaslabs/[Gmail].Drafts")
-         (mu4e-trash-folder "/savaslabs/[Gmail].Trash")
-         (mu4e-refile-folder "/savaslabs/[Gmail].All Mail")
-         (user-mail-address "kosta@savaslabs.com")
-         (smtpmail-default-smtp-server "smtp.gmail.com")
-         (smtpmail-local-domain "savaslabs.com")
-         (smtpmail-smtp-user "kosta@savaslabs.com")
-         (smtpmail-smtp-server "smtp.gmail.com")
-         (smtpmail-stream-type starttls)
-         (mu4e-compose-signature "Kosta Harlan\nDirector of Technology\nhttp://savaslabs.com")
-         (smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
-         (user-mail-address "kosta@savaslabs.com")
-         (user-full-name "Kosta Harlan")
-         (smtpmail-smtp-service 587)))
+              (mu4e-sent-folder "/fastmail/INBOX.Sent Items")
+              (mu4e-drafts-folder "/fastmail/INBOX.Drafts")
+              (mu4e-trash-folder "/fastmail/INBOX.Trash")
+              (mu4e-refile-folder "/fastmail/INBOX.Archive")
+              (user-mail-address "kosta@kostaharlan.net")
+              (smtpmail-default-smtp-server "mail.messagingengine.com")
+              (smtpmail-local-domain "kostaharlan.net")
+              (smtpmail-smtp-user "kosta@fastmail.com")
+              (mu4e-compose-signature "@kostajh | kosta@kostaharlan.net")
+              (smtpmail-smtp-server "mail.messagingengine.com")
+              (smtpmail-stream-type ssl)
+              (smtpmail-smtp-service 465))
+             ("savaslabs"
+              (mu4e-sent-folder "/savaslabs/[Gmail].Sent Mail")
+              (mu4e-drafts-folder "/savaslabs/[Gmail].Drafts")
+              (mu4e-trash-folder "/savaslabs/[Gmail].Trash")
+              (mu4e-refile-folder "/savaslabs/[Gmail].All Mail")
+              (user-mail-address "kosta@savaslabs.com")
+              (smtpmail-default-smtp-server "smtp.gmail.com")
+              (smtpmail-local-domain "savaslabs.com")
+              (smtpmail-smtp-user "kosta@savaslabs.com")
+              (smtpmail-smtp-server "smtp.gmail.com")
+              (smtpmail-stream-type starttls)
+              (mu4e-compose-signature "Kosta Harlan\nDirector of Technology\nhttp://savaslabs.com")
+              (smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
+              (user-mail-address "kosta@savaslabs.com")
+              (user-full-name "Kosta Harlan")
+              (smtpmail-smtp-service 587)))
            (mu4e/mail-account-reset)
            )
      sql
@@ -124,12 +127,9 @@ values."
                   geolocation-enable-weather-forecast)
      emoji
      vagrant
-     (deft :variables
-       deft-extension "org"
-       deft-directory "~/org/notes/"
-       deft-use-filter-string-for-filename t
-       deft-text-mode 'org-mode)
      (org :variables
+          org-babel-confirm-evaluate nil
+          org-confirm-babel-evaluate nil
           org-enable-github-support t
           org-imenu-depth 8
           org-startup-folded (quote "showeverything")
@@ -142,30 +142,30 @@ values."
           org-refile-targets '((org-agenda-files :maxlevel . 4))
           org-default-notes-file (concat org-directory "/notes.org")
           org-capture-templates
-                '(("t" "Task" entry (file+headline "~/org/notes.org" "Tasks")
-                   "** TODO %?\n  %u\n  %a")
-                  ("m" "Meeting" entry (file+headline "~/org/notes.org" "Meetings")
-                   "** MEETING %?\n %u\n %a %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"today\"))")
-                  ("j" "Journal" entry (file+datetree "~/org/journal.org")
-                   "** %?\nEntered on %U\n  %i\n  %a")
-                  ("P" "pull-request-review" entry (file+headline "~/org/notes.org" "Pull Requests")
-                   "** TODO %a %?\nDEADLINE: %(org-insert-time-stamp (org-read-date nil t \"+1d\"))")
-                  ("p" "process-soon" entry (file+headline "~/org/todo.org" "Email")
-                   "** TODO %a %?\nDEADLINE: %(org-insert-time-stamp (org-read-date nil t \"+2d\"))")
-                  ("w" "wait-for-reply" entry (file+headline "~/org/todo.org" "Email")
-                   "** WAIT %u %a %?\n")
-                  ("r" "redmine-issue" entry (file+headline "~/org/notes.org" "Redmine Issue")
-                   "** TODO %a %?\nDEADLINE: %(org-insert-time-stamp (org-read-date nil t \"+2d\"))")
-                  )
+          '(("t" "Task" entry (file+headline "~/org/notes.org" "Tasks")
+             "** TODO %?\n  %u\n  %a")
+            ("m" "Meeting" entry (file+headline "~/org/notes.org" "Meetings")
+             "** MEETING %?\n %u\n %a %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"today\"))")
+            ("j" "Journal" entry (file+datetree "~/org/journal.org")
+             "** %?\nEntered on %U\n  %i\n  %a")
+            ("P" "pull-request-review" entry (file+headline "~/org/notes.org" "Pull Requests")
+             "** TODO %a %?\nDEADLINE: %(org-insert-time-stamp (org-read-date nil t \"+1d\"))")
+            ("p" "process-soon" entry (file+headline "~/org/todo.org" "Email")
+             "** TODO %a %?\nDEADLINE: %(org-insert-time-stamp (org-read-date nil t \"+2d\"))")
+            ("w" "wait-for-reply" entry (file+headline "~/org/todo.org" "Email")
+             "** WAIT %u %a %?\n")
+            ("r" "redmine-issue" entry (file+headline "~/org/notes.org" "Redmine Issue")
+             "** TODO %a %?\nDEADLINE: %(org-insert-time-stamp (org-read-date nil t \"+2d\"))")
+            )
           org-todo-state-tags-triggers (quote (("CANCELLED" ("CANCELLED" . t))
-                  ("WAITING" ("WAITING" . t))
-                  ("DELEGATED" ("DELEGATED" . t))
-                  ("HOLD" ("WAITING") ("HOLD" . t))
-                  (done ("WAITING") ("HOLD"))
-                  ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
-                  ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
-                  ("LOGGED" ("DONE") ("WAITING") ("HOLD") ("CANCELLED"))
-                  ("DONE" ("WAITING") ("CANCELLED") ("HOLD"))))
+                                               ("WAITING" ("WAITING" . t))
+                                               ("DELEGATED" ("DELEGATED" . t))
+                                               ("HOLD" ("WAITING") ("HOLD" . t))
+                                               (done ("WAITING") ("HOLD"))
+                                               ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+                                               ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
+                                               ("LOGGED" ("DONE") ("WAITING") ("HOLD") ("CANCELLED"))
+                                               ("DONE" ("WAITING") ("CANCELLED") ("HOLD"))))
           org-todo-keywords (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)" "LOGGED(l)" "CANCELLED(c@/!)") (sequence "WAITING(w@/!)" "HOLD(h@/!)" "PHONE" "MEETING" "APPOINTMENT")))
           org-agenda-files (quote ("~/org/todo.org"
                                    "~/org/appts.org"
@@ -173,8 +173,11 @@ values."
                                    )))
      php
      (shell :variables
-             shell-default-height 30
-             shell-default-position 'bottom)
+            shell-default-shell 'eshell
+            shell-enable-smart-eshell t
+            shell-defaul-term-shell "/bin/fish"
+            shell-default-height 40
+            shell-default-position 'bottom)
      spell-checking
      syntax-checking
      version-control
@@ -183,9 +186,19 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages then consider to create a layer, you can also put the
    ;; configuration in `dotspacemacs/config'.
-   dotspacemacs-additional-packages '(feature-mode org-redmine org-gcal)
+   dotspacemacs-additional-packages '(
+                                      feature-mode
+                                      org-redmine
+                                      org-gcal
+                                      (dumb-jump
+                                       :location "~/src/dumb-jump/"
+                                       :demand t)
+                                      (emacs-phan
+                                       :location (recipe :fetcher github :repo "stevenremot/emacs-phan")
+                                       :variables
+                                       phan-program-location "~/.composer/vendor/bin/phan"))
    ;; A list of packages and/or extensions that will not be install and loaded.
-   dotspacemacs-excluded-packages '(org-repo-todo)
+   dotspacemacs-excluded-packages '(org-repo-todo evil-jumper)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
    ;; are declared in a layer which is not a member of
    ;; the list `dotspacemacs-configuration-layers'. (default t)
@@ -205,7 +218,7 @@ values."
    ;; variable is `emacs' then the `holy-mode' is enabled at startup. `hybrid'
    ;; uses emacs key bindings for vim's insert mode, but otherwise leaves evil
    ;; unchanged. (default 'vim)
-   dotspacemacs-editing-style 'vim
+   dotspacemacs-editing-style 'hybrid
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
    ;; Specify the startup banner. Default value is `official', it displays
@@ -223,12 +236,8 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         leuven
-                         solarized-light
-                         solarized-dark
-                         spacemacs-dark
-                         spacemacs-light
-                         gotham
+                         majapahit-light
+                         majapahit-dark
                          )
    ;; If non nil the cursor color matches the state color.
    dotspacemacs-colorize-cursor-according-to-state t
@@ -349,9 +358,28 @@ user code."
   "Configuration function for user code.
  This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
+
+  (flycheck-define-checker proselint
+    "A linter for prose."
+    :command ("proselint" source-inplace)
+    :error-patterns
+    ((warning line-start (file-name) ":" line ":" column ": "
+              (id (one-or-more (not (any " "))))
+              (message) line-end))
+    :modes (text-mode markdown-mode gfm-mode org-mode))
+
+  (add-to-list 'flycheck-checkers 'proselint)
+
+  (with-eval-after-load 'mu4e-alert
+    (mu4e-alert-set-default-style 'notifications))
+
   (setq calendar-location-name "Durham, United States"
         calendar-latitude 35.9886
         calendar-longitude 78.9072)
+
+  (setq alert-default-style 'libnotify)
+
+  (global-aggressive-indent-mode 1)
 
   ;; Keybindings.
   (evil-leader/set-key "og" 'org-agenda)
@@ -360,6 +388,9 @@ layers configuration. You are free to put any user code."
   (evil-leader/set-key "oho" 'harvest-clock-out)
 
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
+  (add-hook 'slack-mode 'evil-insert-state)
+  (add-hook 'term-mode 'evil-insert-state)
+  (add-hook 'shell-mode 'evil-insert-state)
 
   ;; Layouts.
 
@@ -375,14 +406,9 @@ layers configuration. You are free to put any user code."
     (mu4e)
     )
 
-  ;; (spacemacs|define-custom-layout "@Slack"
-  ;;   :binding "s"
-  ;;   :body
-  ;;   (progn
-  ;;     (add-hook 'slack-mode #'(lambda ()
-  ;;                             (persp-add-buffer (current-buffer))))
-  ;;     (slack-start))
-  ;;   )
+  (add-hook 'drupal-mode #'(lambda ()
+                             (setq flycheck-phpcs-standard "Drupal")
+                             (setq phpcbf-standard "Drupal")))
 
   (spacemacs|define-custom-layout "@IRC"
     :binding "i"
@@ -418,6 +444,10 @@ layers configuration. You are free to put any user code."
            ("C-c C-h i" . harvest-clock-in)
            ("C-c C-h o" . harvest-clock-out))
     )
+
+  (use-package dumb-jump
+    :load-path "~/src/dumb-jump/"
+    :demand t)
 
   (evil-leader/set-key "oko" 'kostajh/kill-offlineimap)
   (defun kostajh/kill-offlineimap ()
