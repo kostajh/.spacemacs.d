@@ -29,8 +29,9 @@ values."
      auto-completion
      finance
      dockerfile
-     slack
+     ;; slack
      better-defaults
+     pdf-tools
      themes-megapack
      (erc :variables
           erc-join-buffer 'bury
@@ -51,8 +52,6 @@ values."
      spotify
      pandoc
      (mu4e :variables
-           mu4e-enable-notifications t
-           mu4e-enable-mode-line t
            mu4e-installation-path "/usr/local/share/emacs/site-lisp/mu4e"
            mu4e-maildir       "~/mail"   ;; top-level Maildir
            mu4e-sent-folder   "/fastmail/INBOX.Sent Items"       ;; folder for sent messages
@@ -83,6 +82,9 @@ values."
               ("/savaslabs/INBOX"  . ?s)
               )
            mu4e-view-show-images t
+           mu4e-bookmarks `(("flag:unread AND NOT flag:trashed" "Unread messages" ?u)
+                            ("to:kosta@savaslabs.com AND NOT flag:trashed" "Savas" ?s)
+                            ("to:kosta@kostaharlan.net OR to:kostajh@gmail.com OR to:kosta.harlan@gmail.com OR to:kosta@harlan.mayfirst.org OR to:kosta@embros.org AND NOT flag:trashed" "Personal" ?i))
            mu4e-account-alist
            '(("fastmail"
               (mu4e-sent-folder "/fastmail/INBOX.Sent Items")
@@ -121,14 +123,21 @@ values."
      restclient
      semantic
      html
+     (chrome :variables
+             edit-server-url-major-mode-alist
+             '(("github\\.com" . org-mode)
+               ("pm\\.savaslabs\\.com" . markdown-mode)))
      javascript
      shell-scripts
      (geolocation :variables
-                  geolocation-enable-weather-forecast)
+                  geolocation-enable-weather-forecast t
+                  geolocation-enable-location-service t
+                  )
      emoji
      vagrant
      (org :variables
           org-babel-confirm-evaluate nil
+          org-export-babel-evaluate nil
           org-confirm-babel-evaluate nil
           org-enable-github-support t
           org-imenu-depth 8
@@ -136,6 +145,7 @@ values."
           org-directory "~/org"
           org-agenda-skip-scheduled-if-done t
           org-agenda-include-diary t
+          org-agenda-sticky t
           org-clock-persist 'history
           org-outline-path-complete-in-steps nil
           org-refile-use-outline-path 'file
@@ -149,7 +159,7 @@ values."
             ("j" "Journal" entry (file+datetree "~/org/journal.org")
              "** %?\nEntered on %U\n  %i\n  %a")
             ("P" "pull-request-review" entry (file+headline "~/org/notes.org" "Pull Requests")
-             "** TODO %a %?\nDEADLINE: %(org-insert-time-stamp (org-read-date nil t \"+1d\"))")
+             "** TODO %a %? :pr:\nDEADLINE: %(org-insert-time-stamp (org-read-date nil t \"+1d\"))")
             ("p" "process-soon" entry (file+headline "~/org/todo.org" "Email")
              "** TODO %a %?\nDEADLINE: %(org-insert-time-stamp (org-read-date nil t \"+2d\"))")
             ("w" "wait-for-reply" entry (file+headline "~/org/todo.org" "Email")
@@ -178,7 +188,8 @@ values."
             shell-defaul-term-shell "/bin/fish"
             shell-default-height 40
             shell-default-position 'bottom)
-     spell-checking
+     (spell-checking
+      :variables spell-checking-enable-by-default t)
      syntax-checking
      version-control
      )
@@ -190,15 +201,13 @@ values."
                                       feature-mode
                                       org-redmine
                                       org-gcal
-                                      (dumb-jump
-                                       :location "~/src/dumb-jump/"
-                                       :demand t)
+                                      dumb-jump
                                       (emacs-phan
                                        :location (recipe :fetcher github :repo "stevenremot/emacs-phan")
                                        :variables
                                        phan-program-location "~/.composer/vendor/bin/phan"))
    ;; A list of packages and/or extensions that will not be install and loaded.
-   dotspacemacs-excluded-packages '(org-repo-todo evil-jumper)
+   dotspacemacs-excluded-packages '(org-repo-todo evil-jumper mu4e-maildirs-extension)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
    ;; are declared in a layer which is not a member of
    ;; the list `dotspacemacs-configuration-layers'. (default t)
@@ -213,12 +222,25 @@ values."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
-   dotspacemacs-auto-resume-layout t
-   ;; One of `vim', `emacs' or `hybrid'. Evil is always enabled but if the
-   ;; variable is `emacs' then the `holy-mode' is enabled at startup. `hybrid'
-   ;; uses emacs key bindings for vim's insert mode, but otherwise leaves evil
-   ;; unchanged. (default 'vim)
-   dotspacemacs-editing-style 'hybrid
+   ;; If non nil ELPA repositories are contacted via HTTPS whenever it's
+   ;; possible. Set it to nil if you have no way to use HTTPS in your
+   ;; environment, otherwise it is strongly recommended to let it set to t.
+   ;; This variable has no effect if Emacs is launched with the parameter
+   ;; `--insecure' which forces the value of this variable to nil.
+   ;; (default t)
+   dotspacemacs-elpa-https t
+   ;; Maximum allowed time in seconds to contact an ELPA repository.
+   dotspacemacs-elpa-timeout 5
+   ;; If non nil then spacemacs will check for updates at startup
+   ;; when the current branch is not `develop'. (default t)
+   dotspacemacs-check-for-update t
+   ;; One of `vim', `emacs' or `hybrid'.
+   ;; `hybrid' is like `vim' except that `insert state' is replaced by the
+   ;; `hybrid state' with `emacs' key bindings. The value can also be a list
+   ;; with `:variables' keyword (similar to layers). Check the editing styles
+   ;; section of the documentation for details on available variables.
+   ;; (default 'vim)
+   dotspacemacs-editing-style 'vim
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
    ;; Specify the startup banner. Default value is `official', it displays
@@ -229,22 +251,27 @@ values."
    ;; If the value is nil then no banner is displayed. (default 'official)
    dotspacemacs-startup-banner 'official
    ;; List of items to show in the startup buffer. If nil it is disabled.
-   ;; Possible values are: `recents' `bookmarks' `projects'.
+   ;; Possible values are: `recents' `bookmarks' `projects' `agenda' `todos'.
    ;; (default '(recents projects))
    dotspacemacs-startup-lists '(recents projects)
+   ;; Number of recent files to show in the startup buffer. Ignored if
+   ;; `dotspacemacs-startup-lists' doesn't include `recents'. (default 5)
+   dotspacemacs-startup-recent-list-size 5
+   ;; Default major mode of the scratch buffer (default `text-mode')
+   dotspacemacs-scratch-mode 'text-mode
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         majapahit-light
-                         majapahit-dark
+                         solarized-dark
+                         solarized-light
                          )
    ;; If non nil the cursor color matches the state color.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
-   dotspacemacs-default-font '("Hack"
-                               :size 14
+   dotspacemacs-default-font '("Fira Mono"
+                               :size 15
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -259,23 +286,41 @@ values."
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
    ;; (default "C-M-m)
    dotspacemacs-major-mode-emacs-leader-key "C-M-m"
-   ;; The command key used for Evil commands (ex-commands) and
-   ;; Emacs commands (M-x).
-   ;; By default the command key is `:' so ex-commands are executed like in Vim
-   ;; with `:' and Emacs commands are executed with `<leader> :'.
-   dotspacemacs-command-key ":"
-   ;; If non nil `Y' is remapped to `y$'. (default t)
-   dotspacemacs-remap-Y-to-y$ t
+   ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
+   ;; (default "SPC")
+   dotspacemacs-emacs-command-key "SPC"
+   ;; These variables control whether separate commands are bound in the GUI to
+   ;; the key pairs C-i, TAB and C-m, RET.
+   ;; Setting it to a non-nil value, allows for separate commands under <C-i>
+   ;; and TAB or <C-m> and RET.
+   ;; In the terminal, these pairs are generally indistinguishable, so this only
+   ;; works in the GUI. (default nil)
+   dotspacemacs-distinguish-gui-tab nil
+   ;; If non nil `Y' is remapped to `y$' in Evil states. (default nil)
+   dotspacemacs-remap-Y-to-y$ nil
+   ;; If non nil, inverse the meaning of `g' in `:substitute' Evil ex-command.
+   ;; (default nil)
+   dotspacemacs-ex-substitute-global nil
+   ;; Name of the default layout (default "Default")
+   dotspacemacs-default-layout-name "Default"
+   ;; If non nil the default layout name is displayed in the mode-line.
+   ;; (default nil)
+   dotspacemacs-display-default-layout nil
+   ;; If non nil then the last auto saved layouts are resume automatically upon
+   ;; start. (default nil)
+   dotspacemacs-auto-resume-layouts nil
+   ;; Size (in MB) above which spacemacs will prompt to open the large file
+   ;; literally to avoid performance issues. Opening a file literally means that
+   ;; no major mode or minor modes are active. (default is 1)
+   dotspacemacs-large-file-size 1
    ;; Location where to auto-save files. Possible values are `original' to
    ;; auto-save the file in-place, `cache' to auto-save the file to another
    ;; file stored in the cache directory and `nil' to disable auto-saving.
    ;; (default 'cache)
    dotspacemacs-auto-save-file-location 'cache
-   ;; If non nil then `ido' replaces `helm' for some commands. For now only
-   ;; `find-files' (SPC f f), `find-spacemacs-file' (SPC f e s), and
-   ;; `find-contrib-file' (SPC f e c) are replaced. (default nil)
-   dotspacemacs-use-ido nil
-   ;; If non nil, `helm' will try to miminimize the space it uses. (default nil)
+   ;; Maximum number of rollback slots to keep in the cache. (default 5)
+   dotspacemacs-max-rollback-slots 5
+   ;; If non nil, `helm' will try to minimize the space it uses. (default nil)
    dotspacemacs-helm-resize nil
    ;; if non nil, the helm header is hidden when there is only one source.
    ;; (default nil)
@@ -311,20 +356,32 @@ values."
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-active-transparency 90
+   dotspacemacs-active-transparency 100
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
    dotspacemacs-inactive-transparency 90
+   ;; If non nil show the titles of transient states. (default t)
+   dotspacemacs-show-transient-state-title t
+   ;; If non nil show the color guide hint for transient state keys. (default t)
+   dotspacemacs-show-transient-state-color-guide t
    ;; If non nil unicode symbols are displayed in the mode line. (default t)
-   dotspacemacs-mode-line-unicode-symbols t
+   dotspacemacs-mode-line-unicode-symbols nil
    ;; If non nil smooth scrolling (native-scrolling) is enabled. Smooth
-   ;; scrolling overrides the default behavior of Emacs which recenters the
-   ;; point when it reaches the top or bottom of the screen. (default t)
-   dotspacemacs-smooth-scrolling t
+   ;; scrolling overrides the default behavior of Emacs which recenters point
+   ;; when it reaches the top or bottom of the screen. (default t)
+   dotspacemacs-smooth-scrolling nil
+   ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
+   ;; derivatives. If set to `relative', also turns on relative line numbers.
+   ;; (default nil)
+   dotspacemacs-line-numbers nil
    ;; If non-nil smartparens-strict-mode will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
+   ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
+   ;; over any automatically added closing parenthesis, bracket, quote, etc…
+   ;; This can be temporary disabled by pressing `C-q' before `)'. (default nil)
+   dotspacemacs-smart-closing-parenthesis nil
    ;; Select a scope to highlight delimiters. Possible values are `any',
    ;; `current', `all' or `nil'. Default is `all' (highlight any scope and
    ;; emphasis the current one). (default 'all)
@@ -352,6 +409,10 @@ values."
   "Initialization function for user code.
 It is called immediately after `dotspacemacs/init'.  You are free to put any
 user code."
+  (setq slack-enable-emoji t)
+  (load-file "~/.spacemacs.d/.credentials.el")
+  (kostajh/set-slack-credentials)
+  (setq slack-room-subscription '(general slackbot))
   )
 
 (defun dotspacemacs/user-config ()
@@ -359,19 +420,26 @@ user code."
  This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
 
-  (flycheck-define-checker proselint
-    "A linter for prose."
-    :command ("proselint" source-inplace)
-    :error-patterns
-    ((warning line-start (file-name) ":" line ":" column ": "
-              (id (one-or-more (not (any " "))))
-              (message) line-end))
-    :modes (text-mode markdown-mode gfm-mode org-mode))
+  ;; Refresh Harvest.
+  (harvest-refresh-entries)
 
-  (add-to-list 'flycheck-checkers 'proselint)
+  (prodigy-define-service
+    :name "Drupal VM"
+    :tags '(vagrant)
+    :command "~/src/dotfiles/waiting-vagrant.sh"
+    :cwd "~/src/drupal-vm"
+    :ready-message "Machine booted and ready!"
+    :stop-signal 1
+    )
 
-  (with-eval-after-load 'mu4e-alert
-    (mu4e-alert-set-default-style 'notifications))
+  (prodigy-define-service
+    :name "Omega VM"
+    :tags '(vagrant)
+    :command "~/src/dotfiles/waiting-vagrant.sh"
+    :cwd "~/src/omega"
+    :ready-message "Machine booted and ready!"
+    :stop-signal 1
+    )
 
   (setq calendar-location-name "Durham, United States"
         calendar-latitude 35.9886
@@ -379,21 +447,23 @@ layers configuration. You are free to put any user code."
 
   (setq alert-default-style 'libnotify)
 
-  (global-aggressive-indent-mode 1)
-
   ;; Keybindings.
   (evil-leader/set-key "og" 'org-agenda)
   (evil-leader/set-key "oa" 'org-agenda-list)
-  (evil-leader/set-key "ohi" 'harvest-clock-in)
-  (evil-leader/set-key "oho" 'harvest-clock-out)
 
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
   (add-hook 'slack-mode 'evil-insert-state)
   (add-hook 'term-mode 'evil-insert-state)
   (add-hook 'shell-mode 'evil-insert-state)
+  (add-hook 'message-mode 'evil-insert-state)
+  (add-hook 'mu4e-compose-mode 'evil-insert-state)
+
+  (setq evil-move-cursor-back nil)
+
+  (spacemacs/toggle-mode-line-org-clock-on)
+  (spacemacs/toggle-mode-line-battery-on)
 
   ;; Layouts.
-
   (spacemacs|define-custom-layout "@DrupalVM"
     :binding "v"
     :body
@@ -436,18 +506,6 @@ layers configuration. You are free to put any user code."
      (sqlite . t)
      (sql . t)))
 
-  ;; Harvest integration.
-  (use-package harvest
-    :load-path "~/src/harvest.el/"
-    :demand t
-    :bind (("C-c C-h r" . harvest-refresh-entries)
-           ("C-c C-h i" . harvest-clock-in)
-           ("C-c C-h o" . harvest-clock-out))
-    )
-
-  (use-package dumb-jump
-    :load-path "~/src/dumb-jump/"
-    :demand t)
 
   (evil-leader/set-key "oko" 'kostajh/kill-offlineimap)
   (defun kostajh/kill-offlineimap ()
@@ -476,7 +534,10 @@ layers configuration. You are free to put any user code."
     (require 'mu4e)
     (require 'org-mu4e)
     :config
-
+    (evilified-state-evilify-map
+      mu4e-headers-mode-map
+      :mode mu4e-headers-mode
+      :bindings "J" 'mu4e~headers-jump-to-maildir)
     (defun no-auto-fill ()
       "Turn off auto-fill-mode."
       (auto-fill-mode -1))
@@ -484,27 +545,23 @@ layers configuration. You are free to put any user code."
     (add-hook 'mu4e-compose-mode-hook #'no-auto-fill)
     (add-hook 'mu4e-compose-mode-hook 'company-mode-on)
 
-    ;; use imagemagick, if available
+    ;;   ;; use imagemagick, if available
     (when (fboundp 'imagemagick-register-types)
       (imagemagick-register-types))
     (require 'mu4e-contrib)
     (setq mu4e-html2text-command 'mu4e-shr2text)
-
     (setq message-kill-buffer-on-exit t)
-
-    (add-to-list 'mu4e-bookmarks
-                 '("to:kosta@savaslabs.com"           "savas"          ?i) t)
     )
 
   (use-package org-gcal
     :defer t
     :init (require 'org-gcal)
     :config
-    (setq org-gcal-client-id "564287255197-err9fodfknmakdc6i5tq6frjb8j2oa4p.apps.googleusercontent.com"
-          org-gcal-client-secret "2MaRjNFIZg4LjR58BSFle6th"
-          org-gcal-file-alist '(("kosta@savaslabs.com" .  "~/org/appts.org")
-                                ("savaslabs.com_pet0dfipsgkj8fkgf8r8eirqo0@group.calendar.google.com" . "~/org/appts.org")
-                                ("kostajh@gmail.com" . "~/org/appts.org"))))
+    (spacemacs/set-leader-keys
+      "ocf" 'org-gcal-fetch)
+    (load-file "~/.spacemacs.d/.credentials.el")
+    (kostajh/set-org-gcal-credentials)
+    )
 
   (setq-default evil-escape-key-sequence "fd")
   )
@@ -516,10 +573,49 @@ layers configuration. You are free to put any user code."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(compilation-message-face (quote default))
  '(custom-safe-themes
    (quote
-    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "6ecd762f08fd5c3aab65585d5aa04f6ae8b44d969df4be669259975dac849687" "df3e05e16180d77732ceab47a43f2fcdb099714c1c47e91e8089d2fcf5882ea3" "b571f92c9bfaf4a28cb64ae4b4cdbda95241cd62cf07d942be44dc8f46c491f4" default)))
- '(paradox-github-token t))
+    ("df87edcf41dbdb2c5d49d53acdfc9d5c2087ef7259679ac50923f97e0b24fdfe" "2305decca2d6ea63a408edd4701edf5f4f5e19312114c9d1e1d5ffe3112cde58" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "a985799595034bd95cd74ed968d15f93a1145ed81ffcf0537401ec7dd6ebed4f" "708df3cbb25425ccbf077a6e6f014dc3588faba968c90b74097d11177b711ad1" "e97dbbb2b1c42b8588e16523824bc0cb3a21b91eefd6502879cf5baa1fa32e10" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "d4e9f95acd51433b776f1127143bbc7d0f1d41112d547e5b7a9a506be369dc39" "5b29f90eb304b440c908de31caf7d730db451b5909e8a84a2e7cd8d60f6d5c1f" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "40bc0ac47a9bd5b8db7304f8ef628d71e2798135935eb450483db0dbbfff8b11" "341a1f149c8ab55893e5a065e96235e43ee9f82423f4c018bf31a430e1dc1b0f" "3a53f98f4354d66ffaec1edce1bc54a3c622c8a73a583e90fde456b311b889f2" "12b4427ae6e0eef8b870b450e59e75122d5080016a9061c9696959e50d578057" "48373328e7ead33ed0161ad096c688376f65a617c3fcafd62dbfe814fff12a1e" "c3e6b52caa77cb09c049d3c973798bc64b5c43cc437d449eacf35b3e776bf85c" "20e359ef1818a838aff271a72f0f689f5551a27704bf1c9469a5c2657b417e6c" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "b7b2cd8c45e18e28a14145573e84320795f5385895132a646ff779a141bbda7e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "b34636117b62837b3c0c149260dfebe12c5dad3d1177a758bb41c4b15259ed7e" "b85fc9f122202c71b9884c5aff428eb81b99d25d619ee6fde7f3016e08515f07" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "6ecd762f08fd5c3aab65585d5aa04f6ae8b44d969df4be669259975dac849687" "df3e05e16180d77732ceab47a43f2fcdb099714c1c47e91e8089d2fcf5882ea3" "b571f92c9bfaf4a28cb64ae4b4cdbda95241cd62cf07d942be44dc8f46c491f4" default)))
+ '(evil-disable-insert-state-bindings t)
+ '(flycheck-phpcs-standard "Drupal")
+ '(paradox-github-token t)
+ '(safe-local-variable-values
+   (quote
+    ((eval when
+           (and
+            (buffer-file-name)
+            (file-regular-p
+             (buffer-file-name))
+            (string-match-p "^[^.]"
+                            (buffer-file-name)))
+           (emacs-lisp-mode)
+           (when
+               (fboundp
+                (quote flycheck-mode))
+             (flycheck-mode -1))
+           (unless
+               (featurep
+                (quote package-build))
+             (let
+                 ((load-path
+                   (cons ".." load-path)))
+               (require
+                (quote package-build))))
+           (package-build-minor-mode)
+           (set
+            (make-local-variable
+             (quote package-build-working-dir))
+            (expand-file-name "../working/"))
+           (set
+            (make-local-variable
+             (quote package-build-archive-dir))
+            (expand-file-name "../packages/"))
+           (set
+            (make-local-variable
+             (quote package-build-recipes-dir))
+            default-directory)))))
+ '(solarized-use-variable-pitch t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
