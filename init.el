@@ -11,6 +11,9 @@ values."
    ;; `+distribution'. For now available distributions are `spacemacs-base'
    ;; or `spacemacs'. (default 'spacemacs)
    dotspacemacs-distribution 'spacemacs
+   ;; If non-nil layers with lazy install support are lazy installed.
+   ;; (default t)
+   dotspacemacs-enable-lazy-installation t
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
    dotspacemacs-configuration-layer-path '()
@@ -42,9 +45,11 @@ values."
      (ranger :variables
              ranger-show-preview t)
      (git :variables
+          git-magit-status-fullscreen t
           magit-status-buffer-switch-function 'switch-to-buffer)
      prodigy
      markdown
+     twitter
      (gtags :variables
             helm-gtags-auto-update nil)
      github
@@ -253,10 +258,10 @@ values."
    ;; List of items to show in the startup buffer. If nil it is disabled.
    ;; Possible values are: `recents' `bookmarks' `projects' `agenda' `todos'.
    ;; (default '(recents projects))
-   dotspacemacs-startup-lists '(recents projects)
+   dotspacemacs-startup-lists '(agenda todos)
    ;; Number of recent files to show in the startup buffer. Ignored if
    ;; `dotspacemacs-startup-lists' doesn't include `recents'. (default 5)
-   dotspacemacs-startup-recent-list-size 5
+   dotspacemacs-startup-recent-list-size 0
    ;; Default major mode of the scratch buffer (default `text-mode')
    dotspacemacs-scratch-mode 'text-mode
    ;; List of themes, the first of the list is loaded when spacemacs starts.
@@ -330,7 +335,7 @@ values."
    dotspacemacs-helm-position 'bottom
    ;; If non nil the paste micro-state is enabled. When enabled pressing `p`
    ;; several times cycle between the kill ring content. (default nil)
-   dotspacemacs-enable-paste-micro-state t
+   dotspacemacs-enable-paste-transient-state t
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
    dotspacemacs-which-key-delay 0.4
@@ -441,6 +446,25 @@ layers configuration. You are free to put any user code."
     :stop-signal 1
     )
 
+    (setq org-agenda-custom-commands
+        '(("t" "Today" tags "today"
+           ((org-agenda-files '("~/org/todo.org" "~/org/appts.org" "~/org/notes.org")))
+            (org-agenda-sorting-strategy '(todo-state-up priority-up effort-down))
+           ("~/org/export/today.html"))
+          ("w" "This week" tags "thisweek"
+            ((org-agenda-files '("~/org/todo.org" "~/org/appts.org" "~/org/notes.org"))
+             (org-agenda-sorting-strategy '(todo-state-up priority-up effort-down)))
+            ("~/org/export/thisweek.html"))
+          ("n" "Next week" tags "nextweek"
+           ((org-agenda-files '("~/org/todo.org" "~/org/appts.org" "~/org/notes.org"))
+            (org-agenda-sorting-strategy '(todo-state-up priority-up effort-down)))
+           ("~/org/export/thisweek.html"))
+          ("o" "Omega" tags "omega"
+           ((org-agenda-files '("~/org/todo.org" "~/org/notes.org"))
+            (org-agenda-sorting-strategy '(todo-state-up priority-up effort-down)))
+           ("~/org/export/omega.html"))
+          ))
+
   (setq calendar-location-name "Durham, United States"
         calendar-latitude 35.9886
         calendar-longitude 78.9072)
@@ -450,6 +474,8 @@ layers configuration. You are free to put any user code."
   ;; Keybindings.
   (evil-leader/set-key "og" 'org-agenda)
   (evil-leader/set-key "oa" 'org-agenda-list)
+
+  (add-hook 'org-mode 'visual-line-mode)
 
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
   (add-hook 'slack-mode 'evil-insert-state)
@@ -485,16 +511,16 @@ layers configuration. You are free to put any user code."
     :body
     (kostajh/irc-freenode))
 
+  (spacemacs|define-custom-layout "@Twitter"
+    :binding "t"
+    :body
+    (twit))
+
   (spacemacs|define-custom-layout "@Deft"
     :binding "D"
     :body
     (deft)
     )
-
-  (spacemacs|define-custom-layout "@Terminal"
-    :binding "t"
-    :body
-    (shell-pop-ansi-term))
 
   ;; IRC settings.
   (load-file "~/.spacemacs.d/.irc.el")
@@ -552,6 +578,13 @@ layers configuration. You are free to put any user code."
     (setq mu4e-html2text-command 'mu4e-shr2text)
     (setq message-kill-buffer-on-exit t)
     )
+
+  (defun kostajh/gtd ()
+    (interactive)
+    (find-file "~/org/todo.org"))
+
+  (spacemacs/set-leader-keys
+    "ot" 'kostajh/gtd)
 
   (use-package org-gcal
     :defer t
