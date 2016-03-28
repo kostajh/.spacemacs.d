@@ -21,6 +21,7 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
+     ruby
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -32,7 +33,7 @@ values."
      auto-completion
      finance
      dockerfile
-     ;; slack
+     slack
      better-defaults
      pdf-tools
      themes-megapack
@@ -204,6 +205,7 @@ values."
    ;; configuration in `dotspacemacs/config'.
    dotspacemacs-additional-packages '(
                                       feature-mode
+                                      ob-http
                                       org-redmine
                                       org-gcal
                                       dumb-jump
