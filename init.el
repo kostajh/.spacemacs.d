@@ -21,6 +21,7 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
+     ansible
      ruby
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
@@ -28,8 +29,8 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      kostajh
-     (spacemacs-ivy :variables
-                    ivy-initial-inputs-alist nil)
+     (ivy :variables
+          ivy-initial-inputs-alist nil)
      auto-completion
      finance
      dockerfile
@@ -59,69 +60,26 @@ values."
      pandoc
      (mu4e :variables
            mu4e-installation-path "/usr/local/share/emacs/site-lisp/mu4e"
-           mu4e-maildir       "~/mail"   ;; top-level Maildir
-           mu4e-sent-folder   "/fastmail/INBOX.Sent Items"       ;; folder for sent messages
-           mu4e-drafts-folder "/fastmail/INBOX.Drafts"     ;; unfinished messages
-           mu4e-trash-folder  "/fastmail/INBOX.Trash"      ;; trashed messages
-           mu4e-refile-folder "/fastmail/INBOX.Archive"   ;; saved messages
-           mu4e-get-mail-command "offlineimap -q"
-           mu4e-update-interval 300
            mu4e-compose-signature-auto-include t
            mu4e-user-mail-address-list (list "kosta@kostaharlan.net" "kosta@savaslabs.com" "kostajh@gmail.com" "kosta@embros.org" "kostaharlan@gmail.com" "kosta@durhamatletico.com")
            message-send-mail-function 'smtpmail-send-it
-           smtpmail-smtp-server "mail.messagingengine.com"
            epg-gpg-program "gpg"
            smtpmail-auth-credentials (expand-file-name "~/.authinfo")
-           smtpmail-default-smtp-server "mail.messagingengine.com"
-           smtpmail-local-domain "kostaharlan.net"
            user-full-name "Kosta Harlan"
-           user-mail-address "kosta@kostaharlan.net"
            gnutls-algorithm-priority "NORMAL:%COMPAT"
            smtpmail-stream-type 'ssl
            smtpmail-smtp-service 465
            mml2015-use 'epg
            mu4e-attachment-dir  "~/Downloads"
            mu4e-maildir-shortcuts
-           '( ("/fastmail/INBOX"     . ?i)
-              ("/fastmail/INBOX.Archive"   . ?a)
-              ("/fastmail.Sent Items"      . ?e)
-              ("/savaslabs/INBOX"  . ?s)
+           '( ("/INBOX"     . ?i)
+              ("/Archive"   . ?a)
+              ("/Sent Items"      . ?e)
               )
            mu4e-view-show-images t
            mu4e-bookmarks `(("flag:unread AND NOT flag:trashed" "Unread messages" ?u)
                             ("to:kosta@savaslabs.com AND NOT flag:trashed" "Savas" ?s)
                             ("to:kosta@kostaharlan.net OR to:kostajh@gmail.com OR to:kosta.harlan@gmail.com OR to:kosta@harlan.mayfirst.org OR to:kosta@embros.org AND NOT flag:trashed" "Personal" ?i))
-           mu4e-account-alist
-           '(("fastmail"
-              (mu4e-sent-folder "/fastmail/INBOX.Sent Items")
-              (mu4e-drafts-folder "/fastmail/INBOX.Drafts")
-              (mu4e-trash-folder "/fastmail/INBOX.Trash")
-              (mu4e-refile-folder "/fastmail/INBOX.Archive")
-              (user-mail-address "kosta@kostaharlan.net")
-              (smtpmail-default-smtp-server "mail.messagingengine.com")
-              (smtpmail-local-domain "kostaharlan.net")
-              (smtpmail-smtp-user "kosta@fastmail.com")
-              (mu4e-compose-signature "@kostajh | kosta@kostaharlan.net")
-              (smtpmail-smtp-server "mail.messagingengine.com")
-              (smtpmail-stream-type ssl)
-              (smtpmail-smtp-service 465))
-             ("savaslabs"
-              (mu4e-sent-folder "/savaslabs/[Gmail].Sent Mail")
-              (mu4e-drafts-folder "/savaslabs/[Gmail].Drafts")
-              (mu4e-trash-folder "/savaslabs/[Gmail].Trash")
-              (mu4e-refile-folder "/savaslabs/[Gmail].All Mail")
-              (user-mail-address "kosta@savaslabs.com")
-              (smtpmail-default-smtp-server "smtp.gmail.com")
-              (smtpmail-local-domain "savaslabs.com")
-              (smtpmail-smtp-user "kosta@savaslabs.com")
-              (smtpmail-smtp-server "smtp.gmail.com")
-              (smtpmail-stream-type starttls)
-              (mu4e-compose-signature "Kosta Harlan\nDirector of Technology\nhttp://savaslabs.com")
-              (smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
-              (user-mail-address "kosta@savaslabs.com")
-              (user-full-name "Kosta Harlan")
-              (smtpmail-smtp-service 587)))
-           (mu4e/mail-account-reset)
            )
      sql
      python
@@ -209,8 +167,8 @@ values."
                                       org-redmine
                                       org-gcal
                                       dumb-jump
-				      (harvest
-					:location "~/src/harvest.el")
+                                      (harvest
+                                       :location "~/src/harvest.el")
                                       (emacs-phan
                                        :location (recipe :fetcher github :repo "stevenremot/emacs-phan")
                                        :variables
@@ -272,15 +230,18 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         leuven
                          solarized-dark
                          solarized-light
+                         majapahit-light
+                         majapahit-dark
                          )
    ;; If non nil the cursor color matches the state color.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Fira Mono"
-                               :size 32
+                               :size 33
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -418,7 +379,7 @@ values."
   "Initialization function for user code.
 It is called immediately after `dotspacemacs/init'.  You are free to put any
 user code."
-    )
+  )
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -427,10 +388,89 @@ layers configuration. You are free to put any user code."
   (load-file "~/.spacemacs.d/.credentials.el")
   (kostajh/set-slack-credentials)
 
+  (global-set-key (kbd "<f12>") (lambda () (interactive) (org-capture nil "t")))
+
   ;; Refresh Harvest.
   (use-package harvest
     :load-path "~/src/harvest.el")
   (harvest-refresh-entries)
+
+  (setq org-agenda-exporter-settings
+        '((ps-number-of-columns 4)
+          (ps-landscape-mode t)
+          (org-agenda-add-entry-text-maxlines 5)
+          (htmlize-output-type 'css)))
+
+  ;; org-present
+  (eval-after-load "org-present"
+    '(progn
+       (add-hook 'org-present-mode-hook
+                 (lambda ()
+                   (org-present-big)
+                   (visual-line-mode)
+                   (org-display-inline-images)
+                   (org-present-hide-cursor)
+                   (org-present-read-only)))
+       (add-hook 'org-present-mode-quit-hook
+                 (lambda ()
+                   (org-present-small)
+                   (org-remove-inline-images)
+                   (org-present-show-cursor)
+                   (org-present-read-write)))))
+
+  ;; Mu4e contexts
+  (use-package mu4e
+    :config
+    (setq mu4e-contexts
+          `( ,(make-mu4e-context
+               :name "fastmail"
+               :enter-func (lambda () (mu4e-message "Switch to the Personal context")
+                             )
+               :leave-func (lambda () (mu4e-clear-caches))
+               :match-func (lambda (_) (string-equal "home" (mu4e-context-name mu4e~context-current)))
+               :vars '((user-mail-address	. "kosta@kostaharlan.net")
+                       (mu4e-maildir . "~/.maildir-home")
+                       (mu4e-sent-folder . "/Sent Items")
+                       (mu4e-drafts-folder . "/Drafts")
+                       (mu4e-get-mail-command . "mbsync fastmail")
+                       (mu4e-trash-folder . "/Trash")
+                       (mu4e-refile-folder . "/Archive")
+                       (user-mail-address . "kosta@kostaharlan.net")
+                       (smtpmail-default-smtp-server . "mail.messagingengine.com")
+                       (smtpmail-local-domain . "kostaharlan.net")
+                       (smtpmail-smtp-user . "kosta@fastmail.com")
+                       (mu4e-compose-signature . "@kostajh | kosta@kostaharlan.net")
+                       (mu4e-mu-home . "~/.mu-home")
+                       (smtpmail-smtp-server . "mail.messagingengine.com")
+                       (smtpmail-stream-type . ssl)
+                       (smtpmail-smtp-service . 465)
+                       ))
+             ,(make-mu4e-context
+               :name "savaslabs"
+               :enter-func (lambda () (mu4e-message "Switch to the Work context")
+                             )
+               :leave-func (lambda () (mu4e-clear-caches))
+               :match-func (lambda (_) (string-equal "work" (mu4e-context-name mu4e~context-current)))
+               :vars '((user-mail-address . "kosta@savaslabs.com" )
+                       (mu4e-get-mail-command . "mbsync gmail")
+                       (mu4e-maildir . "~/.maildir-work")
+                       (mu4e-sent-folder . "/[Gmail].SentMail")
+                       (mu4e-drafts-folder . "/[Gmail].Drafts")
+                       (mu4e-trash-folder . "/[Gmail].Trash")
+                       (mu4e-refile-folder . "/[Gmail].AllMail")
+                       (user-mail-address . "kosta@savaslabs.com")
+                       (smtpmail-default-smtp-server . "smtp.gmail.com")
+                       (smtpmail-local-domain . "savaslabs.com")
+                       (smtpmail-smtp-user . "kosta@savaslabs.com")
+                       (mu4e-mu-home . "~/.mu-work")
+                       (smtpmail-smtp-server . "smtp.gmail.com")
+                       (smtpmail-stream-type . starttls)
+                       (mu4e-compose-signature . "Kosta Harlan\nDirector of Technology\nhttp://savaslabs.com")
+                       (smtpmail-starttls-credentials . '(("smtp.gmail.com" 587 nil nil)))
+                       (user-mail-address . "kosta@savaslabs.com")
+                       (user-full-name . "Kosta Harlan")
+                       (smtpmail-smtp-service . 587)
+                       )))))
 
   (prodigy-define-service
     :name "Drupal VM"
@@ -450,15 +490,23 @@ layers configuration. You are free to put any user code."
     :stop-signal 1
     )
 
-    (setq org-agenda-custom-commands
+  (setq org-agenda-custom-commands
         '(("t" "Today" tags "today"
            ((org-agenda-files '("~/org/todo.org" "~/org/appts.org" "~/org/notes.org")))
-            (org-agenda-sorting-strategy '(todo-state-up priority-up effort-down))
+           (org-agenda-sorting-strategy '(todo-state-up priority-up effort-down))
            ("~/org/export/today.html"))
+          ("d" "Daily standup"
+           (agenda)
+           ((ps-number-of-columns 2)
+            (ps-landscape-mode t)
+            (org-agenda-prefix-format " [ ] ")
+            (org-agenda-with-colors nil)
+            (org-agenda-remove-tags t))
+           ("~/org/export/daily.txt"))
           ("w" "This week" tags "thisweek"
-            ((org-agenda-files '("~/org/todo.org" "~/org/appts.org" "~/org/notes.org"))
-             (org-agenda-sorting-strategy '(todo-state-up priority-up effort-down)))
-            ("~/org/export/thisweek.html"))
+           ((org-agenda-files '("~/org/todo.org" "~/org/appts.org" "~/org/notes.org"))
+            (org-agenda-sorting-strategy '(todo-state-up priority-up effort-down)))
+           ("~/org/export/thisweek.html"))
           ("n" "Next week" tags "nextweek"
            ((org-agenda-files '("~/org/todo.org" "~/org/appts.org" "~/org/notes.org"))
             (org-agenda-sorting-strategy '(todo-state-up priority-up effort-down)))
@@ -621,17 +669,22 @@ layers configuration. You are free to put any user code."
  '(compilation-message-face (quote default))
  '(custom-safe-themes
    (quote
-    ("df87edcf41dbdb2c5d49d53acdfc9d5c2087ef7259679ac50923f97e0b24fdfe" "2305decca2d6ea63a408edd4701edf5f4f5e19312114c9d1e1d5ffe3112cde58" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "a985799595034bd95cd74ed968d15f93a1145ed81ffcf0537401ec7dd6ebed4f" "708df3cbb25425ccbf077a6e6f014dc3588faba968c90b74097d11177b711ad1" "e97dbbb2b1c42b8588e16523824bc0cb3a21b91eefd6502879cf5baa1fa32e10" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "d4e9f95acd51433b776f1127143bbc7d0f1d41112d547e5b7a9a506be369dc39" "5b29f90eb304b440c908de31caf7d730db451b5909e8a84a2e7cd8d60f6d5c1f" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "40bc0ac47a9bd5b8db7304f8ef628d71e2798135935eb450483db0dbbfff8b11" "341a1f149c8ab55893e5a065e96235e43ee9f82423f4c018bf31a430e1dc1b0f" "3a53f98f4354d66ffaec1edce1bc54a3c622c8a73a583e90fde456b311b889f2" "12b4427ae6e0eef8b870b450e59e75122d5080016a9061c9696959e50d578057" "48373328e7ead33ed0161ad096c688376f65a617c3fcafd62dbfe814fff12a1e" "c3e6b52caa77cb09c049d3c973798bc64b5c43cc437d449eacf35b3e776bf85c" "20e359ef1818a838aff271a72f0f689f5551a27704bf1c9469a5c2657b417e6c" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "b7b2cd8c45e18e28a14145573e84320795f5385895132a646ff779a141bbda7e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "b34636117b62837b3c0c149260dfebe12c5dad3d1177a758bb41c4b15259ed7e" "b85fc9f122202c71b9884c5aff428eb81b99d25d619ee6fde7f3016e08515f07" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "6ecd762f08fd5c3aab65585d5aa04f6ae8b44d969df4be669259975dac849687" "df3e05e16180d77732ceab47a43f2fcdb099714c1c47e91e8089d2fcf5882ea3" "b571f92c9bfaf4a28cb64ae4b4cdbda95241cd62cf07d942be44dc8f46c491f4" default)))
+    ("705f3f6154b4e8fac069849507fd8b660ece013b64a0a31846624ca18d6cf5e1" "5f8f1e226274b73f6e706431399a597dbfd64db34f3fba56a6ccf57d148a0e01" "78f614a58e085bd7b33809e98b6f1a5cdd38dae6257e48176ce21424ee89d058" "40f6a7af0dfad67c0d4df2a1dd86175436d79fc69ea61614d668a635c2cd94ab" "3a5f04a517096b08b08ef39db6d12bd55c04ed3d43b344cf8bd855bde6d3a1ae" "5a21604c4b1f2df98e67cda2347b8f42dc9ce471a48164fcb8d3d52c3a0d10be" "70b9c3d480948a3d007978b29e31d6ab9d7e259105d558c41f8b9532c13219aa" "4ce035b661aee2ea47dbb2f368b8e573346054c04d61c45363e4cb12bc2bdffa" "df87edcf41dbdb2c5d49d53acdfc9d5c2087ef7259679ac50923f97e0b24fdfe" "2305decca2d6ea63a408edd4701edf5f4f5e19312114c9d1e1d5ffe3112cde58" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "a985799595034bd95cd74ed968d15f93a1145ed81ffcf0537401ec7dd6ebed4f" "708df3cbb25425ccbf077a6e6f014dc3588faba968c90b74097d11177b711ad1" "e97dbbb2b1c42b8588e16523824bc0cb3a21b91eefd6502879cf5baa1fa32e10" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "d4e9f95acd51433b776f1127143bbc7d0f1d41112d547e5b7a9a506be369dc39" "5b29f90eb304b440c908de31caf7d730db451b5909e8a84a2e7cd8d60f6d5c1f" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "40bc0ac47a9bd5b8db7304f8ef628d71e2798135935eb450483db0dbbfff8b11" "341a1f149c8ab55893e5a065e96235e43ee9f82423f4c018bf31a430e1dc1b0f" "3a53f98f4354d66ffaec1edce1bc54a3c622c8a73a583e90fde456b311b889f2" "12b4427ae6e0eef8b870b450e59e75122d5080016a9061c9696959e50d578057" "48373328e7ead33ed0161ad096c688376f65a617c3fcafd62dbfe814fff12a1e" "c3e6b52caa77cb09c049d3c973798bc64b5c43cc437d449eacf35b3e776bf85c" "20e359ef1818a838aff271a72f0f689f5551a27704bf1c9469a5c2657b417e6c" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "b7b2cd8c45e18e28a14145573e84320795f5385895132a646ff779a141bbda7e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "b34636117b62837b3c0c149260dfebe12c5dad3d1177a758bb41c4b15259ed7e" "b85fc9f122202c71b9884c5aff428eb81b99d25d619ee6fde7f3016e08515f07" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "6ecd762f08fd5c3aab65585d5aa04f6ae8b44d969df4be669259975dac849687" "df3e05e16180d77732ceab47a43f2fcdb099714c1c47e91e8089d2fcf5882ea3" "b571f92c9bfaf4a28cb64ae4b4cdbda95241cd62cf07d942be44dc8f46c491f4" default)))
  '(evil-disable-insert-state-bindings t)
  '(evil-want-Y-yank-to-eol nil)
  '(flycheck-phpcs-standard "Drupal")
+ '(magit-diff-use-overlays nil)
+ '(org-modules
+   (quote
+    (org-bbdb org-bibtex org-docview org-gnus org-habit org-info org-irc org-mhe org-rmail org-w3m)))
  '(package-selected-packages
    (quote
-    (elfeed-web elfeed-org elfeed-goodies ace-jump-mode noflet elfeed wgrep uuidgen twittering-mode smex rase rake pdf-tools tablist org-download mu4e-alert livid-mode skewer-mode simple-httpd live-py-mode link-hint eyebrowse evil-visual-mark-mode evil-ediff goto-chg undo-tree eshell-z diminish counsel swiper company-shell column-enforce-mode zonokai-theme zenburn-theme zen-and-art-theme zeal-at-point yaml-mode xterm-color ws-butler window-numbering web-mode web-beautify volatile-highlights vi-tilde-fringe vagrant-tramp vagrant underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org theme-changer tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunshine sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stickyfunc-enhance stekene-theme srefactor sql-indent spotify spacemacs-theme spaceline powerline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smooth-scrolling smeargle slim-mode shell-pop seti-theme scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reverse-theme restclient restart-emacs rbenv ranger rainbow-delimiters railscasts-theme pyvenv pytest pyenv-mode py-yapf purple-haze-theme professional-theme prodigy popwin planet-theme pip-requirements phpunit phpcbf php-extras php-auto-yasnippets phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox spinner pandoc-mode hydra page-break-lines ox-pandoc ht osx-location orgit organic-green-theme org-redmine org-present org-pomodoro org-plus-contrib org-gcal alert request-deferred deferred log4e gntp org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-http noctilux-theme niflheim-theme neotree naquadah-theme mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow magit-gh-pulls macrostep lush-theme lorem-ipsum linum-relative light-soap-theme leuven-theme less-css-mode ledger-mode json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc jbeans-theme jazz-theme jade-mode ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-spotify multi helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gtags helm-gitignore request helm-flyspell helm-flx helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haml-mode gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gmail-message-mode ham-mode markdown-mode html-to-markdown gitignore-mode github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh logito pcache gh-md ggtags gandalf-theme flycheck-pos-tip flycheck-ledger flycheck pkg-info epl flx-ido flx flatui-theme flatland-theme fish-mode firebelly-theme fill-column-indicator feature-mode farmhouse-theme fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-args evil-anzu anzu eval-sexp-fu highlight espresso-theme eshell-prompt-extras esh-help erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks emoji-cheat-sheet-plus emmet-mode emacs-phan elisp-slime-nav edit-server dumb-jump drupal-mode php-mode dracula-theme dockerfile-mode django-theme diff-hl define-word darktooth-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company-emoji company-anaconda company colorsarenice-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode clues-theme clean-aindent-mode chruby cherry-blossom-theme busybee-theme bundler inf-ruby buffer-move bubbleberry-theme bracketed-paste birds-of-paradise-plus-theme badwolf-theme auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed apropospriate-theme anti-zenburn-theme anaconda-mode pythonic f s ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup quelpa package-build use-package which-key bind-key bind-map evil solarized-theme dash)))
+    (flyspell-correct atom-one-dark-theme jinja2-mode ansible-doc ansible ivy slack emojify circe oauth2 websocket elfeed-web elfeed-org elfeed-goodies ace-jump-mode noflet elfeed wgrep uuidgen twittering-mode smex rase rake pdf-tools tablist org-download mu4e-alert livid-mode skewer-mode simple-httpd live-py-mode link-hint eyebrowse evil-visual-mark-mode evil-ediff goto-chg undo-tree eshell-z diminish counsel swiper company-shell column-enforce-mode zonokai-theme zenburn-theme zen-and-art-theme zeal-at-point yaml-mode xterm-color ws-butler window-numbering web-mode web-beautify volatile-highlights vi-tilde-fringe vagrant-tramp vagrant underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org theme-changer tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunshine sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stickyfunc-enhance stekene-theme srefactor sql-indent spotify spacemacs-theme spaceline powerline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smooth-scrolling smeargle slim-mode shell-pop seti-theme scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reverse-theme restclient restart-emacs rbenv ranger rainbow-delimiters railscasts-theme pyvenv pytest pyenv-mode py-yapf purple-haze-theme professional-theme prodigy popwin planet-theme pip-requirements phpunit phpcbf php-extras php-auto-yasnippets phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox spinner pandoc-mode hydra page-break-lines ox-pandoc ht osx-location orgit organic-green-theme org-redmine org-present org-pomodoro org-plus-contrib org-gcal alert request-deferred deferred log4e gntp org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-http noctilux-theme niflheim-theme neotree naquadah-theme mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow magit-gh-pulls macrostep lush-theme lorem-ipsum linum-relative light-soap-theme leuven-theme less-css-mode ledger-mode json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc jbeans-theme jazz-theme jade-mode ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-spotify multi helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gtags helm-gitignore request helm-flyspell helm-flx helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haml-mode gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gmail-message-mode ham-mode markdown-mode html-to-markdown gitignore-mode github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh logito pcache gh-md ggtags gandalf-theme flycheck-pos-tip flycheck-ledger flycheck pkg-info epl flx-ido flx flatui-theme flatland-theme fish-mode firebelly-theme fill-column-indicator feature-mode farmhouse-theme fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-args evil-anzu anzu eval-sexp-fu highlight espresso-theme eshell-prompt-extras esh-help erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks emoji-cheat-sheet-plus emmet-mode emacs-phan elisp-slime-nav edit-server dumb-jump drupal-mode php-mode dracula-theme dockerfile-mode django-theme diff-hl define-word darktooth-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company-emoji company-anaconda company colorsarenice-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode clues-theme clean-aindent-mode chruby cherry-blossom-theme busybee-theme bundler inf-ruby buffer-move bubbleberry-theme bracketed-paste birds-of-paradise-plus-theme badwolf-theme auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed apropospriate-theme anti-zenburn-theme anaconda-mode pythonic f s ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup quelpa package-build use-package which-key bind-key bind-map evil solarized-theme dash)))
  '(paradox-github-token t)
  '(safe-local-variable-values
    (quote
-    ((eval when
+    ((eval ispell-change-dictionary "en_US")
+     (eval when
            (and
             (buffer-file-name)
             (file-regular-p
@@ -663,8 +716,7 @@ layers configuration. You are free to put any user code."
            (set
             (make-local-variable
              (quote package-build-recipes-dir))
-            default-directory)))))
- '(solarized-use-variable-pitch t))
+            default-directory))))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
