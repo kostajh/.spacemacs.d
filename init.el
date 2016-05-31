@@ -119,7 +119,7 @@ values."
           org-default-notes-file (concat org-directory "/notes.org")
           org-capture-templates
           '(("t" "Task" entry (file+headline "~/org/notes.org" "Tasks")
-             "** TODO %?\n  %u\n  %a")
+             "** TODO %?\n  %u\n  %l %T %^{Effort}p \nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"today\"))")
             ("m" "Meeting" entry (file+headline "~/org/notes.org" "Meetings")
              "** MEETING %?\n %u\n %a %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"today\"))")
             ("j" "Journal" entry (file+datetree "~/org/journal.org")
@@ -510,10 +510,7 @@ layers configuration. You are free to put any user code."
     )
 
   (setq org-agenda-custom-commands
-        '(("t" "Today" tags "today"
-           ((org-agenda-files '("~/org/todo.org" "~/org/appts.org" "~/org/notes.org")))
-           (org-agenda-sorting-strategy '(todo-state-up priority-up effort-down))
-           ("~/org/export/today.html"))
+        '(
           ("d" "Daily standup"
            (agenda)
            ((ps-number-of-columns 2)
