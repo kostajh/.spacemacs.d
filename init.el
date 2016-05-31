@@ -422,6 +422,8 @@ layers configuration. You are free to put any user code."
           (org-agenda-add-entry-text-maxlines 5)
           (htmlize-output-type 'css)))
 
+  (add-hook 'drupal-mode 'dumb-jump-mode)
+
   ;; org-present
   (eval-after-load "org-present"
     '(progn
