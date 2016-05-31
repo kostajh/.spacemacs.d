@@ -58,29 +58,31 @@ values."
      dash
      spotify
      pandoc
-     (mu4e :variables
-           mu4e-installation-path "/usr/local/share/emacs/site-lisp/mu4e"
-           mu4e-compose-signature-auto-include t
-           mu4e-user-mail-address-list (list "kosta@kostaharlan.net" "kosta@savaslabs.com" "kostajh@gmail.com" "kosta@embros.org" "kostaharlan@gmail.com" "kosta@durhamatletico.com")
-           message-send-mail-function 'smtpmail-send-it
-           epg-gpg-program "gpg"
-           smtpmail-auth-credentials (expand-file-name "~/.authinfo")
-           user-full-name "Kosta Harlan"
-           gnutls-algorithm-priority "NORMAL:%COMPAT"
-           smtpmail-stream-type 'ssl
-           smtpmail-smtp-service 465
-           mml2015-use 'epg
-           mu4e-attachment-dir  "~/Downloads"
-           mu4e-maildir-shortcuts
-           '( ("/INBOX"     . ?i)
-              ("/Archive"   . ?a)
-              ("/Sent Items"      . ?e)
-              )
-           mu4e-view-show-images t
-           mu4e-bookmarks `(("flag:unread AND NOT flag:trashed" "Unread messages" ?u)
-                            ("to:kosta@savaslabs.com AND NOT flag:trashed" "Savas" ?s)
-                            ("to:kosta@kostaharlan.net OR to:kostajh@gmail.com OR to:kosta.harlan@gmail.com OR to:kosta@harlan.mayfirst.org OR to:kosta@embros.org AND NOT flag:trashed" "Personal" ?i))
-           )
+     ;; (mu4e :variables
+     ;;       mu4e-installation-path "/usr/local/share/emacs/site-lisp/mu4e"
+     ;;       mu4e-compose-signature-auto-include t
+     ;;       mu4e-user-mail-address-list (list "kosta@kostaharlan.net" "kosta@savaslabs.com" "kostajh@gmail.com" "kosta@embros.org" "kostaharlan@gmail.com" "kosta@durhamatletico.com")
+     ;;       message-send-mail-function 'smtpmail-send-it
+     ;;       epg-gpg-program "gpg"
+     ;;       smtpmail-auth-credentials (expand-file-name "~/.authinfo")
+     ;;       user-full-name "Kosta Harlan"
+     ;;       gnutls-algorithm-priority "NORMAL:%COMPAT"
+     ;;       smtpmail-stream-type 'ssl
+     ;;       smtpmail-smtp-service 465
+     ;;       mml2015-use 'epg
+     ;;       mu4e-maildir "/home/kosta/Maildir"
+     ;;       mu4e-attachment-dir  "~/Downloads"
+     ;;       mu4e-maildir-shortcuts
+     ;;       '( ("/fastmail/INBOX"     . ?i)
+     ;;          ("/fastmail/Archive"   . ?a)
+     ;;          ("/fastmail/Sent Items"      . ?e)
+     ;;          ("/gmail/Inbox" . ?w)
+     ;;          )
+     ;;       mu4e-view-show-images t
+     ;;       mu4e-bookmarks `(("flag:unread AND NOT flag:trashed" "Unread messages" ?u)
+     ;;                        ("to:kosta@savaslabs.com AND NOT flag:trashed" "Savas" ?s)
+     ;;                        ("to:kosta@kostaharlan.net OR to:kostajh@gmail.com OR to:kosta.harlan@gmail.com OR to:kosta@harlan.mayfirst.org OR to:kosta@embros.org AND NOT flag:trashed" "Personal" ?i))
+     ;;       )
      sql
      python
      yaml
@@ -163,6 +165,7 @@ values."
    ;; packages then consider to create a layer, you can also put the
    ;; configuration in `dotspacemacs/config'.
    dotspacemacs-additional-packages '(
+                                      org-alert
                                       feature-mode
                                       org-redmine
                                       org-gcal
@@ -174,7 +177,7 @@ values."
                                        :variables
                                        phan-program-location "~/.composer/vendor/bin/phan"))
    ;; A list of packages and/or extensions that will not be install and loaded.
-   dotspacemacs-excluded-packages '(org-repo-todo evil-jumper mu4e-maildirs-extension)
+   dotspacemacs-excluded-packages '(org-repo-todo evil-jumper)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
    ;; are declared in a layer which is not a member of
    ;; the list `dotspacemacs-configuration-layers'. (default t)
@@ -216,7 +219,7 @@ values."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'official
+   dotspacemacs-startup-banner '999
    ;; List of items to show in the startup buffer. If nil it is disabled.
    ;; Possible values are: `recents' `bookmarks' `projects' `agenda' `todos'.
    ;; (default '(recents projects))
@@ -230,21 +233,18 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         leuven
-                         solarized-dark
-                         solarized-light
-                         majapahit-light
-                         majapahit-dark
+                         material-light
+                         material
                          )
    ;; If non nil the cursor color matches the state color.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Fira Mono"
-                               :size 33
+                               :size 30
                                :weight normal
                                :width normal
-                               :powerline-scale 1.1)
+                               :powerline-scale 1.0)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The leader key accessible in `emacs state' and `insert state'
@@ -379,6 +379,7 @@ values."
   "Initialization function for user code.
 It is called immediately after `dotspacemacs/init'.  You are free to put any
 user code."
+  (setq-default git-magit-status-fullscreen t)
   )
 
 (defun dotspacemacs/user-config ()
@@ -388,7 +389,27 @@ layers configuration. You are free to put any user code."
   (load-file "~/.spacemacs.d/.credentials.el")
   (kostajh/set-slack-credentials)
 
+  ;; Magit
+  (setq magit-repository-directories '("~/src/"))
+  (global-git-commit-mode t)
+
   (global-set-key (kbd "<f12>") (lambda () (interactive) (org-capture nil "t")))
+
+  (defun kostajh/goto-redmine-issue ()
+    (interactive)
+    (setq kostajh/redmine-active-issue (read-string "Issue #"))
+    (let ((kostajh/redmine-browse-url (concat "https://pm.savaslabs.com/issues/" kostajh/redmine-active-issue)))
+         (defhydra hydra-redmine ()
+           "redmine"
+           ("e" (eww kostajh/redmine-browse-url) "eww")
+           ("b" (browse-url kostajh/redmine-browse-url) "browser")
+           ("q" nil "quit"))
+         (hydra-redmine/body)
+         )
+        )
+
+  (spacemacs/set-leader-keys
+    "orb" 'kostajh/goto-redmine-issue)
 
   ;; Refresh Harvest.
   (use-package harvest
@@ -419,58 +440,56 @@ layers configuration. You are free to put any user code."
                    (org-present-read-write)))))
 
   ;; Mu4e contexts
-  (use-package mu4e
-    :config
-    (setq mu4e-contexts
-          `( ,(make-mu4e-context
-               :name "fastmail"
-               :enter-func (lambda () (mu4e-message "Switch to the Personal context")
-                             )
-               :leave-func (lambda () (mu4e-clear-caches))
-               :match-func (lambda (_) (string-equal "home" (mu4e-context-name mu4e~context-current)))
-               :vars '((user-mail-address	. "kosta@kostaharlan.net")
-                       (mu4e-maildir . "~/.maildir-home")
-                       (mu4e-sent-folder . "/Sent Items")
-                       (mu4e-drafts-folder . "/Drafts")
-                       (mu4e-get-mail-command . "mbsync fastmail")
-                       (mu4e-trash-folder . "/Trash")
-                       (mu4e-refile-folder . "/Archive")
-                       (user-mail-address . "kosta@kostaharlan.net")
-                       (smtpmail-default-smtp-server . "mail.messagingengine.com")
-                       (smtpmail-local-domain . "kostaharlan.net")
-                       (smtpmail-smtp-user . "kosta@fastmail.com")
-                       (mu4e-compose-signature . "@kostajh | kosta@kostaharlan.net")
-                       (mu4e-mu-home . "~/.mu-home")
-                       (smtpmail-smtp-server . "mail.messagingengine.com")
-                       (smtpmail-stream-type . ssl)
-                       (smtpmail-smtp-service . 465)
-                       ))
-             ,(make-mu4e-context
-               :name "savaslabs"
-               :enter-func (lambda () (mu4e-message "Switch to the Work context")
-                             )
-               :leave-func (lambda () (mu4e-clear-caches))
-               :match-func (lambda (_) (string-equal "work" (mu4e-context-name mu4e~context-current)))
-               :vars '((user-mail-address . "kosta@savaslabs.com" )
-                       (mu4e-get-mail-command . "mbsync gmail")
-                       (mu4e-maildir . "~/.maildir-work")
-                       (mu4e-sent-folder . "/[Gmail].SentMail")
-                       (mu4e-drafts-folder . "/[Gmail].Drafts")
-                       (mu4e-trash-folder . "/[Gmail].Trash")
-                       (mu4e-refile-folder . "/[Gmail].AllMail")
-                       (user-mail-address . "kosta@savaslabs.com")
-                       (smtpmail-default-smtp-server . "smtp.gmail.com")
-                       (smtpmail-local-domain . "savaslabs.com")
-                       (smtpmail-smtp-user . "kosta@savaslabs.com")
-                       (mu4e-mu-home . "~/.mu-work")
-                       (smtpmail-smtp-server . "smtp.gmail.com")
-                       (smtpmail-stream-type . starttls)
-                       (mu4e-compose-signature . "Kosta Harlan\nDirector of Technology\nhttp://savaslabs.com")
-                       (smtpmail-starttls-credentials . '(("smtp.gmail.com" 587 nil nil)))
-                       (user-mail-address . "kosta@savaslabs.com")
-                       (user-full-name . "Kosta Harlan")
-                       (smtpmail-smtp-service . 587)
-                       )))))
+  ;; (use-package mu4e
+  ;;   :config
+  ;;   (setq mu4e-contexts
+  ;;         `( ,(make-mu4e-context
+  ;;              :name "fastmail"
+  ;;              :enter-func (lambda () (mu4e-message "Switch to the Personal context")
+  ;;                            )
+  ;;              :leave-func (lambda () (mu4e-clear-caches))
+  ;;              ;; :match-func (lambda (_) (string-equal "home" (mu4e-context-name mu4e~context-current)))
+  ;;              :vars '((user-mail-address	. "kosta@kostaharlan.net")
+  ;;                      (mu4e-sent-folder . "/fastmail/Sent Items")
+  ;;                      (mu4e-drafts-folder . "/fastmail/Drafts")
+  ;;                      (mu4e-get-mail-command . "mbsync -V fastmail")
+  ;;                      (mu4e-trash-folder . "/fastmail/Trash")
+  ;;                      (mu4e-refile-folder . "/fastmail/Archive")
+  ;;                      (user-mail-address . "kosta@kostaharlan.net")
+  ;;                      (smtpmail-default-smtp-server . "mail.messagingengine.com")
+  ;;                      (smtpmail-local-domain . "kostaharlan.net")
+  ;;                      (smtpmail-smtp-user . "kosta@fastmail.com")
+  ;;                      (mu4e-compose-signature . "@kostajh | kosta@kostaharlan.net")
+  ;;                      ;; (mu4e-mu-home . "~/.mu-home")
+  ;;                      (smtpmail-smtp-server . "mail.messagingengine.com")
+  ;;                      (smtpmail-stream-type . ssl)
+  ;;                      (smtpmail-smtp-service . 465)
+  ;;                      ))
+  ;;            ,(make-mu4e-context
+  ;;              :name "savaslabs"
+  ;;              :enter-func (lambda () (mu4e-message "Switch to the Work context")
+  ;;                            )
+  ;;              :leave-func (lambda () (mu4e-clear-caches))
+  ;;              ;; :match-func (lambda (_) (string-equal "work" (mu4e-context-name mu4e~context-current)))
+  ;;              :vars '((user-mail-address . "kosta@savaslabs.com" )
+  ;;                      (mu4e-get-mail-command . "mbsync -V gmail")
+  ;;                      (mu4e-sent-folder . "/gmail/[Gmail].SentMail")
+  ;;                      (mu4e-drafts-folder . "/gmail/[Gmail].Drafts")
+  ;;                      (mu4e-trash-folder . "/gmail/[Gmail].Trash")
+  ;;                      (mu4e-refile-folder . "/gmail/[Gmail].AllMail")
+  ;;                      (user-mail-address . "kosta@savaslabs.com")
+  ;;                      (smtpmail-default-smtp-server . "smtp.gmail.com")
+  ;;                      (smtpmail-local-domain . "savaslabs.com")
+  ;;                      (smtpmail-smtp-user . "kosta@savaslabs.com")
+  ;;                      ;; (mu4e-mu-home . "~/.mu-work")
+  ;;                      (smtpmail-smtp-server . "smtp.gmail.com")
+  ;;                      (smtpmail-stream-type . starttls)
+  ;;                      (mu4e-compose-signature . "Kosta Harlan\nDirector of Technology\nhttp://savaslabs.com")
+  ;;                      (smtpmail-starttls-credentials . '(("smtp.gmail.com" 587 nil nil)))
+  ;;                      (user-mail-address . "kosta@savaslabs.com")
+  ;;                      (user-full-name . "Kosta Harlan")
+  ;;                      (smtpmail-smtp-service . 587)
+  ;;                      )))))
 
   (prodigy-define-service
     :name "Drupal VM"
@@ -534,7 +553,7 @@ layers configuration. You are free to put any user code."
   (add-hook 'term-mode 'evil-insert-state)
   (add-hook 'shell-mode 'evil-insert-state)
   (add-hook 'message-mode 'evil-insert-state)
-  (add-hook 'mu4e-compose-mode 'evil-insert-state)
+  ;; (add-hook 'mu4e-compose-mode 'evil-insert-state)
 
   (setq evil-move-cursor-back nil)
 
@@ -548,11 +567,11 @@ layers configuration. You are free to put any user code."
     (find-file "~/src/drupal-vm/README.md")
     )
 
-  (spacemacs|define-custom-layout "@Mail"
-    :binding "m"
-    :body
-    (mu4e)
-    )
+  ;; (spacemacs|define-custom-layout "@Mail"
+  ;;   :binding "m"
+  ;;   :body
+  ;;   (mu4e)
+  ;;   )
 
   (add-hook 'drupal-mode #'(lambda ()
                              (setq flycheck-phpcs-standard "Drupal")
@@ -573,6 +592,11 @@ layers configuration. You are free to put any user code."
     :body
     (deft)
     )
+
+  (spacemacs|define-custom-layout "@Feeds"
+    :binding "f"
+    :body
+    (elfeed))
 
   ;; IRC settings.
   (load-file "~/.spacemacs.d/.irc.el")
@@ -606,30 +630,30 @@ layers configuration. You are free to put any user code."
       "ora" 'org-redmine-anything-show-issue-all))
 
   ;; mu4e integration.
-  (use-package mu4e
-    :defer t
-    :init
-    (require 'mu4e)
-    (require 'org-mu4e)
-    :config
-    (evilified-state-evilify-map
-      mu4e-headers-mode-map
-      :mode mu4e-headers-mode
-      :bindings "J" 'mu4e~headers-jump-to-maildir)
-    (defun no-auto-fill ()
-      "Turn off auto-fill-mode."
-      (auto-fill-mode -1))
+  ;; (use-package mu4e
+  ;;   :defer t
+  ;;   :init
+  ;;   (require 'mu4e)
+  ;;   (require 'org-mu4e)
+  ;;   :config
+  ;;   (evilified-state-evilify-map
+  ;;     mu4e-headers-mode-map
+  ;;     :mode mu4e-headers-mode
+  ;;     :bindings "J" 'mu4e~headers-jump-to-maildir)
+  ;;   (defun no-auto-fill ()
+  ;;     "Turn off auto-fill-mode."
+  ;;     (auto-fill-mode -1))
 
-    (add-hook 'mu4e-compose-mode-hook #'no-auto-fill)
-    (add-hook 'mu4e-compose-mode-hook 'company-mode-on)
+  ;;   (add-hook 'mu4e-compose-mode-hook #'no-auto-fill)
+  ;;   (add-hook 'mu4e-compose-mode-hook 'company-mode-on)
 
-    ;;   ;; use imagemagick, if available
-    (when (fboundp 'imagemagick-register-types)
-      (imagemagick-register-types))
-    (require 'mu4e-contrib)
-    (setq mu4e-html2text-command 'mu4e-shr2text)
-    (setq message-kill-buffer-on-exit t)
-    )
+  ;;   ;;   ;; use imagemagick, if available
+  ;;   (when (fboundp 'imagemagick-register-types)
+  ;;     (imagemagick-register-types))
+  ;;   (require 'mu4e-contrib)
+  ;;   (setq mu4e-html2text-command 'mu4e-shr2text)
+  ;;   (setq message-kill-buffer-on-exit t)
+  ;;   )
 
   (defun kostajh/gtd ()
     (interactive)
@@ -653,7 +677,7 @@ layers configuration. You are free to put any user code."
     (spacemacs/set-leader-keys
       "ocf" 'org-gcal-fetch)
     (load-file "~/.spacemacs.d/.credentials.el")
-    ;; (kostajh/set-org-gcal-credentials)
+    (kostajh/set-org-gcal-credentials)
     )
 
   (setq-default evil-escape-key-sequence "fd")
@@ -679,7 +703,7 @@ layers configuration. You are free to put any user code."
     (org-bbdb org-bibtex org-docview org-gnus org-habit org-info org-irc org-mhe org-rmail org-w3m)))
  '(package-selected-packages
    (quote
-    (flyspell-correct atom-one-dark-theme jinja2-mode ansible-doc ansible ivy slack emojify circe oauth2 websocket elfeed-web elfeed-org elfeed-goodies ace-jump-mode noflet elfeed wgrep uuidgen twittering-mode smex rase rake pdf-tools tablist org-download mu4e-alert livid-mode skewer-mode simple-httpd live-py-mode link-hint eyebrowse evil-visual-mark-mode evil-ediff goto-chg undo-tree eshell-z diminish counsel swiper company-shell column-enforce-mode zonokai-theme zenburn-theme zen-and-art-theme zeal-at-point yaml-mode xterm-color ws-butler window-numbering web-mode web-beautify volatile-highlights vi-tilde-fringe vagrant-tramp vagrant underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org theme-changer tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunshine sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stickyfunc-enhance stekene-theme srefactor sql-indent spotify spacemacs-theme spaceline powerline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smooth-scrolling smeargle slim-mode shell-pop seti-theme scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reverse-theme restclient restart-emacs rbenv ranger rainbow-delimiters railscasts-theme pyvenv pytest pyenv-mode py-yapf purple-haze-theme professional-theme prodigy popwin planet-theme pip-requirements phpunit phpcbf php-extras php-auto-yasnippets phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox spinner pandoc-mode hydra page-break-lines ox-pandoc ht osx-location orgit organic-green-theme org-redmine org-present org-pomodoro org-plus-contrib org-gcal alert request-deferred deferred log4e gntp org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-http noctilux-theme niflheim-theme neotree naquadah-theme mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow magit-gh-pulls macrostep lush-theme lorem-ipsum linum-relative light-soap-theme leuven-theme less-css-mode ledger-mode json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc jbeans-theme jazz-theme jade-mode ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-spotify multi helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gtags helm-gitignore request helm-flyspell helm-flx helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haml-mode gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gmail-message-mode ham-mode markdown-mode html-to-markdown gitignore-mode github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh logito pcache gh-md ggtags gandalf-theme flycheck-pos-tip flycheck-ledger flycheck pkg-info epl flx-ido flx flatui-theme flatland-theme fish-mode firebelly-theme fill-column-indicator feature-mode farmhouse-theme fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-args evil-anzu anzu eval-sexp-fu highlight espresso-theme eshell-prompt-extras esh-help erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks emoji-cheat-sheet-plus emmet-mode emacs-phan elisp-slime-nav edit-server dumb-jump drupal-mode php-mode dracula-theme dockerfile-mode django-theme diff-hl define-word darktooth-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company-emoji company-anaconda company colorsarenice-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode clues-theme clean-aindent-mode chruby cherry-blossom-theme busybee-theme bundler inf-ruby buffer-move bubbleberry-theme bracketed-paste birds-of-paradise-plus-theme badwolf-theme auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed apropospriate-theme anti-zenburn-theme anaconda-mode pythonic f s ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup quelpa package-build use-package which-key bind-key bind-map evil solarized-theme dash)))
+    (org-repo-todo org-alert nlinum-relative nlinum flyspell-correct atom-one-dark-theme jinja2-mode ansible-doc ansible ivy slack emojify circe oauth2 websocket elfeed-web elfeed-org elfeed-goodies ace-jump-mode noflet elfeed wgrep uuidgen twittering-mode smex rase rake pdf-tools tablist org-download mu4e-alert livid-mode skewer-mode simple-httpd live-py-mode link-hint eyebrowse evil-visual-mark-mode evil-ediff goto-chg undo-tree eshell-z diminish counsel swiper company-shell column-enforce-mode zonokai-theme zenburn-theme zen-and-art-theme zeal-at-point yaml-mode xterm-color ws-butler window-numbering web-mode web-beautify volatile-highlights vi-tilde-fringe vagrant-tramp vagrant underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org theme-changer tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunshine sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stickyfunc-enhance stekene-theme srefactor sql-indent spotify spacemacs-theme spaceline powerline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smooth-scrolling smeargle slim-mode shell-pop seti-theme scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reverse-theme restclient restart-emacs rbenv ranger rainbow-delimiters railscasts-theme pyvenv pytest pyenv-mode py-yapf purple-haze-theme professional-theme prodigy popwin planet-theme pip-requirements phpunit phpcbf php-extras php-auto-yasnippets phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox spinner pandoc-mode hydra page-break-lines ox-pandoc ht osx-location orgit organic-green-theme org-redmine org-present org-pomodoro org-plus-contrib org-gcal alert request-deferred deferred log4e gntp org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-http noctilux-theme niflheim-theme neotree naquadah-theme mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow magit-gh-pulls macrostep lush-theme lorem-ipsum linum-relative light-soap-theme leuven-theme less-css-mode ledger-mode json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc jbeans-theme jazz-theme jade-mode ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-spotify multi helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gtags helm-gitignore request helm-flyspell helm-flx helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haml-mode gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gmail-message-mode ham-mode markdown-mode html-to-markdown gitignore-mode github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh logito pcache gh-md ggtags gandalf-theme flycheck-pos-tip flycheck-ledger flycheck pkg-info epl flx-ido flx flatui-theme flatland-theme fish-mode firebelly-theme fill-column-indicator feature-mode farmhouse-theme fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-args evil-anzu anzu eval-sexp-fu highlight espresso-theme eshell-prompt-extras esh-help erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks emoji-cheat-sheet-plus emmet-mode emacs-phan elisp-slime-nav edit-server dumb-jump drupal-mode php-mode dracula-theme dockerfile-mode django-theme diff-hl define-word darktooth-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company-emoji company-anaconda company colorsarenice-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode clues-theme clean-aindent-mode chruby cherry-blossom-theme busybee-theme bundler inf-ruby buffer-move bubbleberry-theme bracketed-paste birds-of-paradise-plus-theme badwolf-theme auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed apropospriate-theme anti-zenburn-theme anaconda-mode pythonic f s ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup quelpa package-build use-package which-key bind-key bind-map evil solarized-theme dash)))
  '(paradox-github-token t)
  '(safe-local-variable-values
    (quote
@@ -722,7 +746,5 @@ layers configuration. You are free to put any user code."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
- '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil))))
  '(slack-message-output-text ((t (:weight normal :height 1.0))))
  '(variable-pitch ((t (:family "Fira Mono")))))

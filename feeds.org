@@ -1,0 +1,13 @@
+* Blogs                                                              :elfeed:
+** Software Development                                                 :dev:
+*** Emacs                                                    :emacs:mustread:
+**** http://www.terminally-incoherent.com/blog/feed
+**** http://nullprogram.com/feed
+**** entry-title: \(emacs\|org-mode\)
+**** http://planet.emacsen.org/atom.xml
+*** Web Development                                                     :web:
+**** http://planet.phpunit.de/atom.xml
+**** http://feeds.feedburner.com/symfony/blog
+**** http://savaslabs.com/feed.xml
+*** Drupal
+**** https://www.drupal.org/planet/rss.xml
